@@ -40,7 +40,6 @@ public class PieGraph extends AbstractGraph {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		final BasicStroke stroke = new BasicStroke(stokeSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
-
 		g2.setStroke(stroke);
 
 		g2.setColor(GraphConstants.COLOR_VIER);

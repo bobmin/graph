@@ -96,7 +96,7 @@ public abstract class AbstractGraph extends JComponent {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("\n\tgraphSize = ").append(graphSize);
 		sb.append("\n\tfontSize = ").append(fontSize);
-		LOG.info(sb.toString());
+		LOG.fine(sb.toString());
 		
 		bigFont = ROBOTO_BOLD.deriveFont(fontSize);
 		smallFont = ROBOTO_REGULAR.deriveFont(fontSize * 0.35f);
