@@ -33,6 +33,10 @@ public abstract class AbstractGraph extends JComponent {
 
 	/** die Standardgröße der Komponente */
 	private static final Dimension SIZE = new Dimension(100, 100);
+	
+	Font bigFont = null;
+	
+	Font smallFont = null;
 
 	/**
 	 * Instanziiert das Objekt.
@@ -85,7 +89,18 @@ public abstract class AbstractGraph extends JComponent {
 //		g.setColor(GraphConstants.COLOR_FUENF);
 //		g.fillRect(x1, y1, x2, y2);
 
-		final BufferedImage image = createGraph(Math.min(width, height));
+		final int graphSize = Math.min(width, height);
+		final float fontSize = graphSize * 0.29f;
+		
+		final StringBuffer sb = new StringBuffer();
+		sb.append("\n\tgraphSize = ").append(graphSize);
+		sb.append("\n\tfontSize = ").append(fontSize);
+		LOG.info(sb.toString());
+		
+		bigFont = ROBOTO_BOLD.deriveFont(fontSize);
+		smallFont = ROBOTO_REGULAR.deriveFont(fontSize * 0.35f);
+		
+		final BufferedImage image = createGraph(graphSize);
 
 		g2.drawImage(image, border.left, border.top, image.getWidth(), image.getHeight(), null);
 

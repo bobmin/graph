@@ -29,17 +29,10 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	@Override
-	public BufferedImage createGraph(final int size) {
+	public BufferedImage createGraph(final int graphSize) {
 
-		final int graphSize = size;
-		final double margin = size * 0.1d;
-		final float stokeSize = size * 0.075f;
-		final float fontSize = size * 0.29f;
-
-		final StringBuffer sb = new StringBuffer();
-		sb.append("\n\tgraphSize = ").append(graphSize);
-		sb.append("\n\tfontSize = ").append(fontSize);
-		LOG.info(sb.toString());
+		final double margin = graphSize * 0.1d;
+		final float stokeSize = graphSize * 0.075f;
 
 		final BufferedImage image = new BufferedImage(graphSize, graphSize,
 				BufferedImage.TYPE_INT_RGB);
@@ -72,8 +65,7 @@ public class PieGraph extends AbstractGraph {
 
 		final String textEins = String.valueOf(value);
 
-		final Font fontBold = ROBOTO_BOLD.deriveFont(fontSize);
-		g2.setFont(fontBold);
+		g2.setFont(bigFont);
 
 		final FontMetrics fontMetrics = g2.getFontMetrics();
 
@@ -82,16 +74,15 @@ public class PieGraph extends AbstractGraph {
 		g2.drawString(textEins, (graphSize / 2 - stringWidth / 2), (graphSize / 2));
 
 		if (null != unit) {
-			paintString(g2, graphSize, (fontSize * 0.35f), unit);
+			paintString(g2, graphSize, smallFont, unit);
 		}
 
 		return image;
 
 	}
 
-	private void paintString(final Graphics2D g2, final int graphSize, final float fontSize, final String text) {
-		final Font fontRegular = ROBOTO_REGULAR.deriveFont(fontSize);
-		g2.setFont(fontRegular);
+	private void paintString(final Graphics2D g2, final int graphSize, final Font font, final String text) {
+		g2.setFont(font);
 
 		final FontMetrics fontMetricsRegular = g2.getFontMetrics();
 

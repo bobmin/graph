@@ -21,7 +21,11 @@ import javax.swing.Timer;
  */
 public class GraphDemo extends JFrame implements ActionListener {
 
+	/** die Donut-Grafiken */
 	private final PieGraph[] pieGraph;
+	
+	/** die Text-Grafiken */
+	private final TextGraph[] textGraph;
 
 	private Timer timer = null;
 
@@ -42,13 +46,15 @@ public class GraphDemo extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		final JPanel contentPane = new JPanel(new BorderLayout(0, 0));
 		contentPane.add(new ColorPanel(), BorderLayout.NORTH);
-		pieGraph = new PieGraph[5];
-		final JPanel centerPanel = new JPanel(new GridLayout(1, pieGraph.length));
+		final int size = 5;
+		pieGraph = new PieGraph[size];
+		textGraph = new TextGraph[size];
+		final JPanel centerPanel = new JPanel(new GridLayout(1, size));
 		for (int idx = 0; idx < pieGraph.length; idx++) {
 			pieGraph[idx] = new PieGraph();
+			textGraph[idx] = new TextGraph();
 			centerPanel.add(pieGraph[idx]);
 		}
-//		centerPanel.add(new LineGraph());
 		contentPane.add(centerPanel, BorderLayout.CENTER);
 		getContentPane().add(contentPane);
 		setSize(650, 500);
