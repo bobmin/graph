@@ -34,15 +34,11 @@ public class PieGraph extends AbstractGraph {
 		final double margin = graphSize * 0.1d;
 		final float stokeSize = graphSize * 0.075f;
 
-		final BufferedImage image = new BufferedImage(graphSize, graphSize,
-				BufferedImage.TYPE_INT_RGB);
-		final Graphics2D g2 = (Graphics2D) image.getGraphics();
+		final BufferedImage image = createEmptyImage(graphSize);
+		final Graphics2D g2 = (Graphics2D) image.getGraphics();		
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		g2.setColor(GraphConstants.COLOR_FUENF);
-		g2.fillRect(0, 0, graphSize, graphSize);
-
+		
 		final BasicStroke stroke = new BasicStroke(stokeSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
 
 		g2.setStroke(stroke);
@@ -63,34 +59,16 @@ public class PieGraph extends AbstractGraph {
 
 		g2.setColor(GraphConstants.COLOR_VIER);
 
-		final String textEins = String.valueOf(value);
+		final String vauleString = String.valueOf(value);
 
-		g2.setFont(bigFont);
-
-		final FontMetrics fontMetrics = g2.getFontMetrics();
-
-		final int stringWidth = fontMetrics.stringWidth(textEins);
-
-		g2.drawString(textEins, (graphSize / 2 - stringWidth / 2), (graphSize / 2));
+		paintString(g2, graphSize, bigFont, vauleString, 0);
 
 		if (null != unit) {
-			paintString(g2, graphSize, smallFont, unit);
+			paintString(g2, graphSize, smallFont, unit, 1);
 		}
 
 		return image;
 
-	}
-
-	private void paintString(final Graphics2D g2, final int graphSize, final Font font, final String text) {
-		g2.setFont(font);
-
-		final FontMetrics fontMetricsRegular = g2.getFontMetrics();
-
-		final int stringWidthRegular = fontMetricsRegular.stringWidth(text);
-
-		final int height = fontMetricsRegular.getHeight();
-
-		g2.drawString(text, (graphSize / 2 - stringWidthRegular / 2), (graphSize / 2 + height));
 	}
 
 	public void setValue(final int x) {

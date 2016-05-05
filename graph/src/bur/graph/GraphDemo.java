@@ -49,11 +49,14 @@ public class GraphDemo extends JFrame implements ActionListener {
 		final int size = 5;
 		pieGraph = new PieGraph[size];
 		textGraph = new TextGraph[size];
-		final JPanel centerPanel = new JPanel(new GridLayout(1, size));
-		for (int idx = 0; idx < pieGraph.length; idx++) {
+		final JPanel centerPanel = new JPanel(new GridLayout(2, size));
+		for (int idx = 0; idx < size; idx++) {
 			pieGraph[idx] = new PieGraph();
-			textGraph[idx] = new TextGraph();
 			centerPanel.add(pieGraph[idx]);
+		}
+		for (int idx = 0; idx < size; idx++) {
+			textGraph[idx] = new TextGraph();
+			centerPanel.add(textGraph[idx]);
 		}
 		contentPane.add(centerPanel, BorderLayout.CENTER);
 		getContentPane().add(contentPane);

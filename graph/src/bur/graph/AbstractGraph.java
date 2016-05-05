@@ -3,6 +3,7 @@ package bur.graph;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -107,5 +108,33 @@ public abstract class AbstractGraph extends JComponent {
 	}
 
 	abstract public BufferedImage createGraph(final int size);
+	
+	// ----------------------------
+	
+	BufferedImage createEmptyImage(final int graphSize) {
+		final BufferedImage image = new BufferedImage(graphSize, graphSize,
+				BufferedImage.TYPE_INT_RGB);
+		final Graphics2D g2 = (Graphics2D) image.getGraphics();
 
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		g2.setColor(GraphConstants.COLOR_FUENF);
+		g2.fillRect(0, 0, graphSize, graphSize);
+		
+		return image;
+	}
+
+	void paintString(final Graphics2D g2, final int graphSize, final Font font, final String text, float offset) {
+		g2.setFont(font);
+
+		final FontMetrics fontMetrics = g2.getFontMetrics();
+		final int stringWidth = fontMetrics.stringWidth(text);
+		final int height = fontMetrics.getHeight();
+
+		final float x = ((graphSize - stringWidth) * 0.5f);
+		final float y = (graphSize * 0.5f + (height * offset));
+		
+		g2.drawString(text, x, y);
+	}
+	
 }
