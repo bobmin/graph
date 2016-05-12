@@ -23,13 +23,13 @@ public class GraphDemo extends JFrame implements ActionListener {
 
 	/** die Donut-Grafiken */
 	private final PieGraph[] pieGraph;
-	
+
 	/** die Text-Grafiken */
 	private final TextGraph[] textGraph;
 
 	/** die Balken-Grafiken */
 	private final BarGraph[] barGraph;
-	
+
 	private Timer timer = null;
 
 	public static void main(String[] args) {
@@ -80,16 +80,18 @@ public class GraphDemo extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		final String[] units = new String[] { "%", "gb", "Dateien", "abgerechnet", "abger", "fertig", "Mbit/s",
-				"autom." };
+		final String[] texte = new String[] { "Dateien", "abgerechnet", "abger", "fertig", "Mbit/s", "autom" };
 		for (int idx = 0; idx < pieGraph.length; idx++) {
 			// die Donut-Grafiken
+			pieGraph[idx].setMode(PieGraph.Mode.UNIT_AND_ONE_TEXTLINE);
 			pieGraph[idx].setValue(new Random().nextInt(100));
-			pieGraph[idx].setUnit(units[new Random().nextInt(units.length - 1)]);
+			pieGraph[idx].setUnit("%");
+			// texte[new Random().nextInt(texte.length - 1)]
+			pieGraph[idx].setText("berechnet");
 			pieGraph[idx].repaint();
 			// die Balken-Grafiken
 			final double[] values = new double[6];
-			for (int vIdx=0; vIdx<6; vIdx++) {
+			for (int vIdx = 0; vIdx < 6; vIdx++) {
 				values[vIdx] = (100.0d * new Random().nextDouble());
 			}
 			barGraph[idx].setValues(values);

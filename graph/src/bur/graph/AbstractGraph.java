@@ -34,9 +34,9 @@ public abstract class AbstractGraph extends JComponent {
 
 	/** die Standardgröße der Komponente */
 	private static final Dimension SIZE = new Dimension(100, 100);
-	
+
 	Font bigFont = null;
-	
+
 	Font smallFont = null;
 
 	/**
@@ -81,26 +81,26 @@ public abstract class AbstractGraph extends JComponent {
 		final int width = getWidth();
 		final int height = getHeight();
 
-//		final int x1 = 0 + border.left;
-//		final int y1 = 0 + border.top;
-//
-//		final int x2 = width - border.right;
-//		final int y2 = height - border.bottom;
-//
-//		g.setColor(GraphConstants.COLOR_FUENF);
-//		g.fillRect(x1, y1, x2, y2);
+		// final int x1 = 0 + border.left;
+		// final int y1 = 0 + border.top;
+		//
+		// final int x2 = width - border.right;
+		// final int y2 = height - border.bottom;
+		//
+		// g.setColor(GraphConstants.COLOR_FUENF);
+		// g.fillRect(x1, y1, x2, y2);
 
 		final int graphSize = Math.min(width, height);
 		final float fontSize = graphSize * 0.29f;
-		
+
 		final StringBuffer sb = new StringBuffer();
 		sb.append("\n\tgraphSize = ").append(graphSize);
 		sb.append("\n\tfontSize = ").append(fontSize);
 		LOG.fine(sb.toString());
-		
+
 		bigFont = ROBOTO_BOLD.deriveFont(fontSize);
 		smallFont = ROBOTO_REGULAR.deriveFont(fontSize * 0.35f);
-		
+
 		final BufferedImage image = createGraph(graphSize);
 
 		g2.drawImage(image, border.left, border.top, image.getWidth(), image.getHeight(), null);
@@ -108,23 +108,23 @@ public abstract class AbstractGraph extends JComponent {
 	}
 
 	abstract public BufferedImage createGraph(final int size);
-	
+
 	// ----------------------------
-	
+
 	BufferedImage createEmptyImage(final int graphSize) {
-		final BufferedImage image = new BufferedImage(graphSize, graphSize,
-				BufferedImage.TYPE_INT_RGB);
+		final BufferedImage image = new BufferedImage(graphSize, graphSize, BufferedImage.TYPE_INT_RGB);
 		final Graphics2D g2 = (Graphics2D) image.getGraphics();
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setColor(GraphConstants.COLOR_FUENF);
 		g2.fillRect(0, 0, graphSize, graphSize);
-		
+
 		return image;
 	}
 
-	void paintString(final Graphics2D g2, final int graphSize, final Font font, final String text, float offset) {
+	void paintString(final Graphics2D g2, final int graphSize, final Font font, final String text, Font fontTwo,
+			String textTwo, float offset) {
 		g2.setFont(font);
 
 		final FontMetrics fontMetrics = g2.getFontMetrics();
@@ -133,8 +133,20 @@ public abstract class AbstractGraph extends JComponent {
 
 		final float x = ((graphSize - stringWidth) * 0.5f);
 		final float y = (graphSize * 0.5f + (height * offset));
-		
+
 		g2.drawString(text, x, y);
+
+		// zweiter Text (Standard: rechts daneben, nicht mittig)
+		if (null != textTwo) {
+			if (null != fontTwo) {
+				g2.setFont(fontTwo);
+			}
+			final FontMetrics fontMetricsTwo = g2.getFontMetrics();
+			final int stringWidthTwo = fontMetricsTwo.stringWidth(text);
+			// g2.setColor(g2.getColor().darker());
+			g2.drawString(textTwo, x + stringWidth + 1, y);
+		}
+
 	}
-	
+
 }

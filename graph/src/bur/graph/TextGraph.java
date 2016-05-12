@@ -23,9 +23,9 @@ public class TextGraph extends AbstractGraph {
 		
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		paintString(g2, graphSize, bigFont, "1586", 0);
-		paintString(g2, graphSize, smallFont, "Vorgänge", 1);
-		paintString(g2, graphSize, smallFont, "Verfahren 2", 2);
+		paintString(g2, graphSize, bigFont, "1586", null, null, 0);
+		paintString(g2, graphSize, smallFont, "Vorgänge", null, null, 1);
+		paintString(g2, graphSize, smallFont, "Verfahren 2", null, null, 2);
 		
 		return image;
 	}
