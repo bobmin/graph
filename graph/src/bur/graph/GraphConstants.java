@@ -11,13 +11,13 @@ import java.awt.Color;
 public interface GraphConstants {
 
 	// #00ACE9
-	Color COLOR_EINS = new Color(
+	Color COLOR_BLUE = new Color(
 			Integer.valueOf("00", 16),
 			Integer.valueOf("AC", 16),
 			Integer.valueOf("E9", 16));
 
 	// #D43F3F
-	Color COLOR_ZWEI = new Color(
+	Color COLOR_RED = new Color(
 			Integer.valueOf("D4", 16),
 			Integer.valueOf("3F", 16),
 			Integer.valueOf("3F", 16));
@@ -29,7 +29,7 @@ public interface GraphConstants {
 			Integer.valueOf("1F", 16));
 
 	// #F6F6E8
-	Color COLOR_VIER = new Color(
+	Color COLOR_TEXT = new Color(
 			Integer.valueOf("F6", 16),
 			Integer.valueOf("F6", 16),
 			Integer.valueOf("E8", 16));

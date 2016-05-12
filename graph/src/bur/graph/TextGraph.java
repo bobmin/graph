@@ -5,7 +5,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 /**
- * Zeigt eine Zeile mit groﬂer Schrift und zwei Zeilen mit kleiner Schrift.
+ * Zeigt eine Zeile mit gro√üer Schrift und zwei Zeilen mit kleiner Schrift.
  *  
  * @author maik@btmx.net
  *
@@ -24,7 +24,7 @@ public class TextGraph extends AbstractGraph {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		paintString(g2, graphSize, bigFont, "1586", null, null, 0);
-		paintString(g2, graphSize, smallFont, "Vorg‰nge", null, null, 1);
+		paintString(g2, graphSize, smallFont, "Vorg√§nge", null, null, 1);
 		paintString(g2, graphSize, smallFont, "Verfahren 2", null, null, 2);
 		
 		return image;

@@ -81,6 +81,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		final String[] texte = new String[] { "Dateien", "abgerechnet", "abger", "fertig", "Mbit/s", "autom" };
+		final String[] axisText = new String[] { "12", "1", "2", "3", "4", "5" };
 		for (int idx = 0; idx < pieGraph.length; idx++) {
 			// die Donut-Grafiken
 			pieGraph[idx].setMode(PieGraph.Mode.UNIT_AND_ONE_TEXTLINE);
@@ -90,11 +91,16 @@ public class GraphDemo extends JFrame implements ActionListener {
 			pieGraph[idx].setText("berechnet");
 			pieGraph[idx].repaint();
 			// die Balken-Grafiken
-			final double[] values = new double[6];
+			final double[] blueValues = new double[6];
+			final double[] redValues = new double[6];
 			for (int vIdx = 0; vIdx < 6; vIdx++) {
-				values[vIdx] = (100.0d * new Random().nextDouble());
+				final Random rand = new Random();
+				blueValues[vIdx] = (100.0d * rand.nextDouble());
+				redValues[vIdx] = (blueValues[vIdx] * 0.6d * rand.nextDouble());
 			}
-			barGraph[idx].setValues(values);
+			barGraph[idx].setBlueValues(blueValues);
+			barGraph[idx].setRedValues(redValues);
+			barGraph[idx].setAxisText(axisText);
 			barGraph[idx].repaint();
 		}
 	}
@@ -103,10 +109,10 @@ public class GraphDemo extends JFrame implements ActionListener {
 
 		public ColorPanel() {
 			super(new GridLayout(1, 5));
-			initColorButton("#00ACE9", GraphConstants.COLOR_EINS);
-			initColorButton("#D43F3F", GraphConstants.COLOR_ZWEI);
+			initColorButton("#00ACE9", GraphConstants.COLOR_BLUE);
+			initColorButton("#D43F3F", GraphConstants.COLOR_RED);
 			initColorButton("#6A9A1F", GraphConstants.COLOR_DREI);
-			initColorButton("#F6F6E8", GraphConstants.COLOR_VIER);
+			initColorButton("#F6F6E8", GraphConstants.COLOR_TEXT);
 			initColorButton("#404040", GraphConstants.COLOR_FUENF);
 		}
 

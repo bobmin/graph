@@ -25,7 +25,7 @@ public class PieGraph extends AbstractGraph {
 	/** die Zahl von 0 bis 100 */
 	private int value = 0;
 
-	/** die Maßeinheit */
+	/** die Maï¿½einheit */
 	private String unit = null;
 
 	/** der Zusatztext */
@@ -51,16 +51,16 @@ public class PieGraph extends AbstractGraph {
 		final BasicStroke stroke = new BasicStroke(stokeSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
 		g2.setStroke(stroke);
 
-		g2.setColor(GraphConstants.COLOR_VIER);
+		g2.setColor(GraphConstants.COLOR_TEXT);
 
 		g2.draw(new Ellipse2D.Double(margin, margin, (graphSize - 2 * margin), (graphSize - 2 * margin)));
 
-		g2.setColor(GraphConstants.COLOR_EINS);
+		g2.setColor(GraphConstants.COLOR_BLUE);
 
 		g2.draw(new Arc2D.Double(margin, margin, (graphSize - 2 * margin), (graphSize - 2 * margin), 90,
 				(360.0d * value / 100), Arc2D.OPEN));
 
-		g2.setColor(GraphConstants.COLOR_VIER);
+		g2.setColor(GraphConstants.COLOR_TEXT);
 
 		final String vauleString = String.valueOf(value);
 
@@ -93,7 +93,7 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt die Betriebsart der Anzeige. Wird <code>null</code> übergeben, wird
+	 * Setzt die Betriebsart der Anzeige. Wird <code>null</code> ï¿½bergeben, wird
 	 * {@link Mode#TWO_TEXTLINES} verwendet.
 	 * 
 	 * @param mode
@@ -104,12 +104,12 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt den Wert. Gültige Werte sind Zahlen von 0 bis 100.
+	 * Setzt den Wert. Gï¿½ltige Werte sind Zahlen von 0 bis 100.
 	 * 
 	 * @param x
 	 *            der neue Wert
 	 * @throws IllegalArgumentException
-	 *             wenn Wert ausserhalb des Gültigkeitsbereichs
+	 *             wenn Wert ausserhalb des Gï¿½ltigkeitsbereichs
 	 */
 	public void setValue(final int x) {
 		if (!(0 <= x && x <= 100)) {
@@ -120,11 +120,11 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt die Maßeinheit. Wird <code>null</code> übergeben, wird keine
-	 * Maßeinheit angezeigt.
+	 * Setzt die Maï¿½einheit. Wird <code>null</code> ï¿½bergeben, wird keine
+	 * Maï¿½einheit angezeigt.
 	 * 
 	 * @param x
-	 *            die Maßeinheit
+	 *            die Maï¿½einheit
 	 */
 	public void setUnit(final String x) {
 		this.unit = x;
@@ -132,7 +132,7 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt den Zusatztext. Wird <code>null</code> übergeben, wird keine
+	 * Setzt den Zusatztext. Wird <code>null</code> ï¿½bergeben, wird keine
 	 * Zusatztext angezeigt.
 	 * 
 	 * @param x

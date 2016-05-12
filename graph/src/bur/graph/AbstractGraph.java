@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 /**
- * Zentrale Klasse f¸r die grafischen Komponenten.
+ * Zentrale Klasse f√ºr die grafischen Komponenten.
  * 
  * @author maik.boettcher@bur-kg.de
  *
@@ -26,13 +26,13 @@ public abstract class AbstractGraph extends JComponent {
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(AbstractGraph.class.getName());
 
-	/** die Schrift f¸r groﬂe Nummern */
+	/** die Schrift f√ºr gro√üe Nummern */
 	public static final Font ROBOTO_BOLD = createFontFromTTF("/roboto/Roboto-Bold.ttf");
 
-	/** die Schrift f¸r Maﬂeinheiten */
+	/** die Schrift f√ºr Ma√üeinheiten */
 	public static final Font ROBOTO_REGULAR = createFontFromTTF("/roboto/Roboto-Regular.ttf");
 
-	/** die Standardgrˆﬂe der Komponente */
+	/** die Standardgr√∂√üe der Komponente */
 	private static final Dimension SIZE = new Dimension(100, 100);
 
 	Font bigFont = null;
@@ -54,7 +54,7 @@ public abstract class AbstractGraph extends JComponent {
 	 * @param path
 	 *            der Pfad innerhalb vom JAR
 	 * @param size
-	 *            die Schriftgrˆﬂe
+	 *            die Schriftgr√∂√üe
 	 * @return ein Objekt oder <code>null</code>
 	 */
 	public static Font createFontFromTTF(final String path) {
