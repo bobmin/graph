@@ -2,15 +2,12 @@ package bur.graph;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
@@ -26,12 +23,6 @@ public abstract class AbstractGraph extends JComponent {
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(AbstractGraph.class.getName());
 
-	/** die Schrift für große Nummern */
-	public static final Font ROBOTO_BOLD = createFontFromTTF("/roboto/Roboto-Bold.ttf");
-
-	/** die Schrift für Maßeinheiten */
-	public static final Font ROBOTO_REGULAR = createFontFromTTF("/roboto/Roboto-Regular.ttf");
-
 	/** die Standardgröße der Komponente */
 	private static final Dimension SIZE = new Dimension(100, 100);
 
@@ -45,29 +36,6 @@ public abstract class AbstractGraph extends JComponent {
 	public AbstractGraph() {
 		setMinimumSize(SIZE);
 		setPreferredSize(SIZE);
-	}
-
-	/**
-	 * Liefert den Font zur TTF-Datei aus dem JAR. Kann der Font nicht geladen
-	 * werden, wird <code>null</code> geliefert.
-	 * 
-	 * @param path
-	 *            der Pfad innerhalb vom JAR
-	 * @param size
-	 *            die Schriftgröße
-	 * @return ein Objekt oder <code>null</code>
-	 */
-	public static Font createFontFromTTF(final String path) {
-		Font x = null;
-		final InputStream ttf = PieGraph.class.getResourceAsStream(path);
-		if (null != ttf) {
-			try {
-				x = Font.createFont(Font.TRUETYPE_FONT, ttf);
-			} catch (FontFormatException | IOException ex) {
-				LOG.severe(String.format("font currupt: %s", path));
-			}
-		}
-		return x;
 	}
 
 	@Override
@@ -98,8 +66,8 @@ public abstract class AbstractGraph extends JComponent {
 		sb.append("\n\tfontSize = ").append(fontSize);
 		LOG.fine(sb.toString());
 
-		bigFont = ROBOTO_BOLD.deriveFont(fontSize);
-		smallFont = ROBOTO_REGULAR.deriveFont(fontSize * 0.35f);
+		bigFont = GraphConstants.ROBOTO_BOLD.deriveFont(fontSize);
+		smallFont = GraphConstants.ROBOTO_REGULAR.deriveFont(fontSize * 0.35f);
 
 		final BufferedImage image = createGraph(graphSize);
 
@@ -117,7 +85,7 @@ public abstract class AbstractGraph extends JComponent {
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		g2.setColor(GraphConstants.COLOR_FUENF);
+		g2.setColor(GraphConstants.COLOR_GRAY);
 		g2.fillRect(0, 0, graphSize, graphSize);
 
 		return image;

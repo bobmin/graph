@@ -111,9 +111,9 @@ public class GraphDemo extends JFrame implements ActionListener {
 			super(new GridLayout(1, 5));
 			initColorButton("#00ACE9", GraphConstants.COLOR_BLUE);
 			initColorButton("#D43F3F", GraphConstants.COLOR_RED);
-			initColorButton("#6A9A1F", GraphConstants.COLOR_DREI);
+			initColorButton("#6A9A1F", GraphConstants.COLOR_GREEN);
 			initColorButton("#F6F6E8", GraphConstants.COLOR_TEXT);
-			initColorButton("#404040", GraphConstants.COLOR_FUENF);
+			initColorButton("#404040", GraphConstants.COLOR_GRAY);
 		}
 
 		private void initColorButton(final String label, final Color bg) {
