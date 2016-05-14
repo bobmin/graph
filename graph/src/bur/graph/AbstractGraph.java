@@ -85,7 +85,7 @@ public abstract class AbstractGraph extends JComponent {
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		g2.setColor(GraphConstants.COLOR_GRAY);
+		g2.setColor(GraphConstants.getBackgroundColor());
 		g2.fillRect(0, 0, graphSize, graphSize);
 
 		return image;

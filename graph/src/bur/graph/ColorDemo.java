@@ -11,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,14 +23,15 @@ public class ColorDemo extends JFrame {
 	/** der Vergrößerungsfaktor */
 	double zoom = 1.0;
 
+	int scheme = 0;
+
 	/** die Kantenglättung */
 	boolean antialiasing = true;
 
-	private static final Color[] COLORS = new Color[] { GraphConstants.COLOR_TEXT, GraphConstants.COLOR_RED,
-			GraphConstants.COLOR_BLUE, GraphConstants.COLOR_GREEN };
+	private static Color[] colors = Arrays.copyOf(GraphConstants.COLORS, 6);
 
 	/** die Farbauswahl */
-	int color = 0;
+	int selection = 0;
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -63,14 +65,14 @@ public class ColorDemo extends JFrame {
 	}
 
 	private void select(final int index) {
-		this.color = index;
+		this.selection = index;
 		repaint();
 	}
 
 	private void color(final int rgb, final int step) {
-		int red = COLORS[color].getRed();
-		int green = COLORS[color].getGreen();
-		int blue = COLORS[color].getBlue();
+		int red = colors[selection].getRed();
+		int green = colors[selection].getGreen();
+		int blue = colors[selection].getBlue();
 		if (0 == rgb) {
 			red += step;
 			green += step;
@@ -85,7 +87,7 @@ public class ColorDemo extends JFrame {
 		red = check(red);
 		green = check(green);
 		blue = check(blue);
-		COLORS[color] = new Color(red, green, blue);
+		colors[selection] = new Color(red, green, blue);
 		System.out.println("color assigned: " + red + ":" + green + ":" + blue);
 		repaint();
 	}
@@ -97,6 +99,13 @@ public class ColorDemo extends JFrame {
 			return 0;
 		}
 		return x;
+	}
+
+	private void scheme(final int index) {
+		this.scheme = index;
+		GraphConstants.setTheme(index);
+		colors = Arrays.copyOf(GraphConstants.COLORS, 6);
+		repaint();
 	}
 
 	private class Panel extends JPanel {
@@ -111,7 +120,7 @@ public class ColorDemo extends JFrame {
 
 			// Hintergrund
 
-			g2.setColor(GraphConstants.COLOR_GRAY);
+			g2.setColor(GraphConstants.getBackgroundColor());
 			g2.fillRect(0, 0, getWidth(), getHeight());
 
 			// hints
@@ -138,48 +147,48 @@ public class ColorDemo extends JFrame {
 
 			// schräg
 
-			g2.setColor(COLORS[0]);
+			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
 			g2.fillRect(10, 10, 10, 10);
 
-			g2.setColor(COLORS[1]);
+			g2.setColor(colors[GraphConstants.COLOR_RED]);
 			g2.fillRect(15, 15, 10, 10);
 
-			g2.setColor(COLORS[2]);
+			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
 			g2.fillRect(20, 20, 10, 10);
 
-			g2.setColor(COLORS[3]);
+			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
 			g2.fillRect(25, 25, 10, 10);
 
 			// überlagernd ohne Abstand
 
 			int x = 40;
 
-			g2.setColor(COLORS[0]);
+			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
 			g2.fillRect(x, 10, 10, 50);
 
-			g2.setColor(COLORS[1]);
+			g2.setColor(colors[GraphConstants.COLOR_RED]);
 			g2.fillRect(x, 20, 10, 10);
 
-			g2.setColor(COLORS[2]);
+			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
 			g2.fillRect(x, 30, 10, 10);
 
-			g2.setColor(COLORS[3]);
+			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
 			g2.fillRect(x, 40, 10, 10);
 
 			// überlagernd mit Abstand
 
 			x = 60;
 
-			g2.setColor(COLORS[0]);
+			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
 			g2.fillRect(x, 10, 10, 50);
 
-			g2.setColor(COLORS[1]);
+			g2.setColor(colors[GraphConstants.COLOR_RED]);
 			g2.fillRect(x, 20, 10, 9);
 
-			g2.setColor(COLORS[2]);
+			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
 			g2.fillRect(x, 30, 10, 9);
 
-			g2.setColor(COLORS[3]);
+			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
 			g2.fillRect(x, 40, 10, 9);
 
 			// per Strich
@@ -187,30 +196,34 @@ public class ColorDemo extends JFrame {
 			final BasicStroke stroke = new BasicStroke(10.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
 			g2.setStroke(stroke);
 
-			g2.setColor(COLORS[0]);
+			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
 			g2.drawLine(10, 80, 80, 80);
 
-			g2.setColor(COLORS[1]);
+			g2.setColor(colors[GraphConstants.COLOR_RED]);
 			g2.drawLine(20, 80, 30, 80);
 
-			g2.setColor(COLORS[2]);
+			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
 			g2.drawLine(30, 80, 40, 80);
 
-			g2.setColor(COLORS[3]);
+			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
 			g2.drawLine(40, 80, 50, 80);
+
+			g2.setColor(colors[GraphConstants.COLOR_YELLOW]);
+			g2.drawLine(50, 80, 60, 80);
 
 			// Farbauswahl
 
-			x = (10 * (color + 1) + 1);
-			g2.setColor(GraphConstants.COLOR_BLUE);
+			x = (10 * (selection + 1) + 1);
+			g2.setColor(GraphConstants.getBlueColor());
 			g2.fill(new Ellipse2D.Double(80, x, 8, 8));
 
 			// Texte
 
-			g2.setColor(GraphConstants.COLOR_TEXT);
+			g2.setColor(GraphConstants.getTextColor());
 			g2.setFont(GraphConstants.ROBOTO_REGULAR.deriveFont(12.0f));
 			g2.drawString("Antialiasing: " + String.valueOf(antialiasing).toUpperCase(), 10, 120);
 			g2.drawString("Zoom: " + String.valueOf(zoom), 10, 140);
+			g2.drawString("Schema: " + String.valueOf(scheme + 1), 10, 160);
 
 			// aufräumen
 
@@ -260,6 +273,21 @@ public class ColorDemo extends JFrame {
 			} else if ('B' == cmd) {
 				System.out.println("blue -");
 				color(3, -1);
+			} else if ('!' == cmd) {
+				System.out.println("scheme 0");
+				scheme(0);
+			} else if ('"' == cmd) {
+				System.out.println("scheme 1");
+				scheme(1);
+			} else if ('§' == cmd) {
+				System.out.println("scheme 2");
+				scheme(2);
+			} else if ('$' == cmd) {
+				System.out.println("scheme 3");
+				scheme(3);
+			} else if ('%' == cmd) {
+				System.out.println("scheme 4");
+				scheme(4);
 			}
 		}
 

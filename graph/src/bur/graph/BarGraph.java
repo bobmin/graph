@@ -51,13 +51,13 @@ public class BarGraph extends AbstractGraph {
 			final double y2 = margin + (graphSize * 0.5d);
 
 			// Hintergrund
-			g2.setColor(GraphConstants.COLOR_TEXT);
+			g2.setColor(GraphConstants.getTextColor());
 			g2.draw(new Line2D.Double(x1, y1, x1, y2));
 
 			// Beschriftung
 			final String yt = axisText[idx];
 			if (null != yt) {
-				g2.setColor(GraphConstants.COLOR_TEXT);
+				g2.setColor(GraphConstants.getTextColor());
 
 				final int stringWidth = fontMetrics.stringWidth(yt);
 				final int height = fontMetrics.getHeight();
@@ -70,11 +70,11 @@ public class BarGraph extends AbstractGraph {
 			final double red = blue * redValues[idx] / 100;
 
 			// blaue Werte
-			g2.setColor(GraphConstants.COLOR_BLUE);
+			g2.setColor(GraphConstants.getBlueColor());
 			g2.draw(new Line2D.Double(x1, (y2 - blue + red), x1, y2));
 
 			// rote Werte
-			g2.setColor(GraphConstants.COLOR_RED);
+			g2.setColor(GraphConstants.getRedColor());
 			g2.draw(new Line2D.Double(x1, (y2 - blue), x1, (y2 - blue + red)));
 
 		}

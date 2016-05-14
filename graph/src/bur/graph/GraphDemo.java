@@ -108,12 +108,13 @@ public class GraphDemo extends JFrame implements ActionListener {
 	private static class ColorPanel extends JPanel {
 
 		public ColorPanel() {
-			super(new GridLayout(1, 5));
-			initColorButton("#00ACE9", GraphConstants.COLOR_BLUE);
-			initColorButton("#D43F3F", GraphConstants.COLOR_RED);
-			initColorButton("#6A9A1F", GraphConstants.COLOR_GREEN);
-			initColorButton("#F6F6E8", GraphConstants.COLOR_TEXT);
-			initColorButton("#404040", GraphConstants.COLOR_GRAY);
+			super(new GridLayout(1, 6));
+			initColorButton("#", GraphConstants.getBlueColor());
+			initColorButton("#", GraphConstants.getRedColor());
+			initColorButton("#", GraphConstants.getYellowColor());
+			initColorButton("#", GraphConstants.getGreenColor());
+			initColorButton("#", GraphConstants.getTextColor());
+			initColorButton("#", GraphConstants.getBackgroundColor());
 		}
 
 		private void initColorButton(final String label, final Color bg) {
