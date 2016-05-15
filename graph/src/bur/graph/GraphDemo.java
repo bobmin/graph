@@ -87,8 +87,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 			pieGraph[idx].setMode(PieGraph.Mode.UNIT_AND_ONE_TEXTLINE);
 			pieGraph[idx].setValue(new Random().nextInt(100));
 			pieGraph[idx].setUnit("%");
-			// texte[new Random().nextInt(texte.length - 1)]
-			pieGraph[idx].setText("berechnet");
+			pieGraph[idx].setText(texte[new Random().nextInt(texte.length - 1)]);
 			pieGraph[idx].repaint();
 			// die Balken-Grafiken
 			final double[] blueValues = new double[6];
@@ -108,13 +107,12 @@ public class GraphDemo extends JFrame implements ActionListener {
 	private static class ColorPanel extends JPanel {
 
 		public ColorPanel() {
-			super(new GridLayout(1, 6));
-			initColorButton("#", GraphConstants.getBlueColor());
-			initColorButton("#", GraphConstants.getRedColor());
-			initColorButton("#", GraphConstants.getYellowColor());
-			initColorButton("#", GraphConstants.getGreenColor());
-			initColorButton("#", GraphConstants.getTextColor());
-			initColorButton("#", GraphConstants.getBackgroundColor());
+			super(new GridLayout(1, GraphConstants.COLORS.length));
+			for (int i = 0; i < GraphConstants.COLORS.length; i++) {
+				final Color c = GraphConstants.COLORS[i];
+				initColorButton("#" + Integer.toHexString(c.getRed()) + Integer.toHexString(c.getGreen())
+						+ Integer.toHexString(c.getBlue()), c);
+			}
 		}
 
 		private void initColorButton(final String label, final Color bg) {
