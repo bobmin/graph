@@ -18,7 +18,9 @@ public class GraphConstants {
 			{ "404040", "F6F6E8", "00ACE9", "6A9A1F", "cfd427", "D43F3F" },
 			{ "323232", "F0F0F0", "0092CC", "779933", "DCD427", "FF3333" },
 			{ "282828", "F0F0F0", "087099", "5C7829", "B7B327", "CC3333" },
-			{ "1d2126", "b6babf", "5f88b0", "70bf53", "d89b28", "eb5368" }, };
+			{ "1d2126", "b6babf", "5f88b0", "70bf53", "d89b28", "eb5368" },
+			{ "303030", "cacaca", "0065a2", "00a1b5", "b8af28", "b82828" },
+	};
 
 	public static final Color[] COLORS = new Color[6];
 

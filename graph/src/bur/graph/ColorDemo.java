@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -11,7 +12,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -23,10 +27,27 @@ public class ColorDemo extends JFrame {
 	/** der Vergrößerungsfaktor */
 	double zoom = 1.0;
 
-	int scheme = 0;
+	/** die Themenauswahltasten */
+	private static List<Character> THEME_CHARS = new ArrayList<>();
+
+	static {
+		THEME_CHARS.add('!');
+		THEME_CHARS.add('"');
+		THEME_CHARS.add('§');
+		THEME_CHARS.add('$');
+		THEME_CHARS.add('%');
+		THEME_CHARS.add('&');
+		System.out.println("themes: " + THEME_CHARS);
+	}
+
+	/** die Themenauswahl */
+	int theme = 0;
 
 	/** die Kantenglättung */
 	boolean antialiasing = true;
+
+	/** die Maskierung */
+	boolean mask = false;
 
 	private static Color[] colors = Arrays.copyOf(GraphConstants.COLORS, 6);
 
@@ -61,6 +82,11 @@ public class ColorDemo extends JFrame {
 
 	private void toggleAntialiasing() {
 		this.antialiasing = !antialiasing;
+		repaint();
+	}
+
+	private void toggleMask() {
+		this.mask = !mask;
 		repaint();
 	}
 
@@ -101,9 +127,9 @@ public class ColorDemo extends JFrame {
 		return x;
 	}
 
-	private void scheme(final int index) {
-		this.scheme = index;
-		GraphConstants.setTheme(index);
+	private void theme(final char key) {
+		this.theme = THEME_CHARS.indexOf(Character.valueOf(key));
+		GraphConstants.setTheme(theme);
 		colors = Arrays.copyOf(GraphConstants.COLORS, 6);
 		repaint();
 	}
@@ -116,7 +142,7 @@ public class ColorDemo extends JFrame {
 
 		@Override
 		protected void paintComponent(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g;
+			final Graphics2D g2 = (Graphics2D) g;
 
 			// Hintergrund
 
@@ -136,7 +162,7 @@ public class ColorDemo extends JFrame {
 
 			// zoom
 
-			AffineTransform tx1 = new AffineTransform();
+			final AffineTransform tx1 = new AffineTransform();
 			// tx1.translate(110, 22);
 			tx1.scale(zoom, zoom);
 			g2.setTransform(tx1);
@@ -144,86 +170,80 @@ public class ColorDemo extends JFrame {
 			// kombinieren
 
 			g2.setComposite(AlphaComposite.SrcOver);
+			final int colorSize = GraphConstants.COLORS.length;
+			int x = 10;
 
 			// schräg
 
-			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
-			g2.fillRect(10, 10, 10, 10);
-
-			g2.setColor(colors[GraphConstants.COLOR_RED]);
-			g2.fillRect(15, 15, 10, 10);
-
-			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
-			g2.fillRect(20, 20, 10, 10);
-
-			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
-			g2.fillRect(25, 25, 10, 10);
+			for (int i = 0; i < colorSize; i++) {
+				g2.setColor(colors[i]);
+				g2.fillRect(x + i * 5, x + i * 5, 10, 10);
+			}
 
 			// überlagernd ohne Abstand
 
-			int x = 40;
+			x += colorSize * 5 + 10;
 
 			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
-			g2.fillRect(x, 10, 10, 50);
+			g2.fillRect(x, 10, 10, 10 * colorSize);
 
-			g2.setColor(colors[GraphConstants.COLOR_RED]);
-			g2.fillRect(x, 20, 10, 10);
-
-			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
-			g2.fillRect(x, 30, 10, 10);
-
-			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
-			g2.fillRect(x, 40, 10, 10);
+			for (int i = 0; i < colorSize; i++) {
+				g2.setColor(colors[i]);
+				g2.fillRect(x, 10 + i * 10, 10, 10);
+			}
 
 			// überlagernd mit Abstand
 
-			x = 60;
+			x += 20;
 
 			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
-			g2.fillRect(x, 10, 10, 50);
+			g2.fillRect(x, 10, 10, 10 * colorSize);
 
-			g2.setColor(colors[GraphConstants.COLOR_RED]);
-			g2.fillRect(x, 20, 10, 9);
-
-			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
-			g2.fillRect(x, 30, 10, 9);
-
-			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
-			g2.fillRect(x, 40, 10, 9);
+			for (int i = 0; i < colorSize; i++) {
+				g2.setColor(colors[i]);
+				g2.fillRect(x, 10 + i * 10 + 1, 10, 8);
+			}
 
 			// per Strich
 
-			final BasicStroke stroke = new BasicStroke(10.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
-			g2.setStroke(stroke);
+			final BasicStroke colorStroke = new BasicStroke(10.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+			g2.setStroke(colorStroke);
 
 			g2.setColor(colors[GraphConstants.COLOR_TEXT]);
 			g2.drawLine(10, 80, 80, 80);
 
-			g2.setColor(colors[GraphConstants.COLOR_RED]);
-			g2.drawLine(20, 80, 30, 80);
+			for (int i = 0; i < colorSize; i++) {
+				g2.setColor(colors[i]);
+				g2.drawLine(10 + i * 10, 80, 10 + i * 10 + 10, 80);
+			}
 
-			g2.setColor(colors[GraphConstants.COLOR_BLUE]);
-			g2.drawLine(30, 80, 40, 80);
-
-			g2.setColor(colors[GraphConstants.COLOR_GREEN]);
-			g2.drawLine(40, 80, 50, 80);
-
-			g2.setColor(colors[GraphConstants.COLOR_YELLOW]);
-			g2.drawLine(50, 80, 60, 80);
+			if (mask) {
+				final BasicStroke maskStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+				g2.setStroke(maskStroke);
+				g2.setColor(Color.BLACK);
+				g2.draw(new Rectangle2D.Double(9, 74, 71, 11));
+			}
 
 			// Farbauswahl
 
-			x = (10 * (selection + 1) + 1);
+			x += 15;
+			final int y = (10 * (selection + 1) + 1);
 			g2.setColor(GraphConstants.getBlueColor());
-			g2.fill(new Ellipse2D.Double(80, x, 8, 8));
+			g2.fill(new Ellipse2D.Double(x, y, 8, 8));
 
 			// Texte
 
 			g2.setColor(GraphConstants.getTextColor());
 			g2.setFont(GraphConstants.ROBOTO_REGULAR.deriveFont(12.0f));
-			g2.drawString("Antialiasing: " + String.valueOf(antialiasing).toUpperCase(), 10, 120);
-			g2.drawString("Zoom: " + String.valueOf(zoom), 10, 140);
-			g2.drawString("Schema: " + String.valueOf(scheme + 1), 10, 160);
+			final FontMetrics fm = g2.getFontMetrics();
+			final int textHeight = fm.getHeight();
+			x = 100;
+			g2.drawString("Antialiasing [a]: " + String.valueOf(antialiasing).toUpperCase(), 10, (x += textHeight));
+			g2.drawString("Maske [m]: " + String.valueOf(mask).toUpperCase(), 10, (x += textHeight));
+			g2.drawString("Zoom [+/-]: " + String.valueOf(zoom), 10, (x += textHeight));
+			g2.drawString("Schema [SHIFT + 1.." + THEME_CHARS.size() + "]: " + String.valueOf(theme + 1), 10,
+					(x += textHeight));
+			g2.drawString("Farbe [1..5]: " + String.valueOf(selection + 1), 10, (x += textHeight));
 
 			// aufräumen
 
@@ -240,13 +260,16 @@ public class ColorDemo extends JFrame {
 			if ('a' == cmd) {
 				System.out.println("antialiasing...");
 				toggleAntialiasing();
+			} else if ('m' == cmd) {
+				System.out.println("mask...");
+				toggleMask();
 			} else if ('+' == cmd) {
 				System.out.println("zoom in...");
 				zoom(1.1);
 			} else if ('-' == cmd) {
 				System.out.println("zoom out...");
 				zoom(0.9);
-			} else if ('1' == cmd || '2' == cmd || '3' == cmd || '4' == cmd) {
+			} else if ('1' == cmd || '2' == cmd || '3' == cmd || '4' == cmd || '5' == cmd || '6' == cmd) {
 				System.out.println("color: " + cmd);
 				select(Integer.parseInt(String.valueOf(cmd)) - 1);
 			} else if ('x' == cmd) {
@@ -273,21 +296,9 @@ public class ColorDemo extends JFrame {
 			} else if ('B' == cmd) {
 				System.out.println("blue -");
 				color(3, -1);
-			} else if ('!' == cmd) {
-				System.out.println("scheme 0");
-				scheme(0);
-			} else if ('"' == cmd) {
-				System.out.println("scheme 1");
-				scheme(1);
-			} else if ('§' == cmd) {
-				System.out.println("scheme 2");
-				scheme(2);
-			} else if ('$' == cmd) {
-				System.out.println("scheme 3");
-				scheme(3);
-			} else if ('%' == cmd) {
-				System.out.println("scheme 4");
-				scheme(4);
+			} else if (-1 < THEME_CHARS.indexOf(Character.valueOf(cmd))) {
+				System.out.println("theme " + cmd);
+				theme(cmd);
 			}
 		}
 
