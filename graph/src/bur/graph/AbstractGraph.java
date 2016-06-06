@@ -71,7 +71,7 @@ public abstract class AbstractGraph extends JComponent {
 
 		final BufferedImage image = createGraph(graphSize);
 
-		g2.drawImage(image, border.left, border.top, image.getWidth(), image.getHeight(), null);
+		g2.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
 
 	}
 
@@ -91,8 +91,10 @@ public abstract class AbstractGraph extends JComponent {
 		return image;
 	}
 
-	void paintString(final Graphics2D g2, final int graphSize, final Font font, final String text, Font fontTwo,
-			String textTwo, float offset) {
+	void paintString(final Graphics2D g2, final int graphSize,
+			final Font font, final String text,
+			final Font fontTwo, final String textTwo,
+			float offset) {
 		g2.setFont(font);
 
 		final FontMetrics fontMetrics = g2.getFontMetrics();

@@ -101,6 +101,18 @@ public class GraphDemo extends JFrame implements ActionListener {
 			barGraph[idx].setRedValues(redValues);
 			barGraph[idx].setAxisText(axisText);
 			barGraph[idx].repaint();
+			// die Texte
+			final String[] values = new String[3];
+			values[0] = texte[new Random().nextInt(texte.length - 1)];
+			values[1] = texte[new Random().nextInt(texte.length - 1)];
+			values[2] = texte[new Random().nextInt(texte.length - 1)];
+			textGraph[idx].setValues(values);
+			if (5 > new Random().nextInt(10)) {
+				textGraph[idx].setMode(TextGraph.Mode.ONE_BIG_TWO_SMALL);
+			} else {
+				textGraph[idx].setMode(TextGraph.Mode.TWO_BIG);
+			}
+			textGraph[idx].repaint();
 		}
 	}
 
