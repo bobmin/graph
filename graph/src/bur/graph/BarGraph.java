@@ -10,7 +10,11 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
- * Zeichnet sechs Balken.
+ * Zeichnet sechs Balken in blauer Farbe und optional ein rotes Balkenende. Die
+ * Größe des roten Balken wird vom blauen abgezogen.
+ * <p>
+ * Optional kann ein Balken markiert werden und sein Wert am unteren Rand
+ * erscheinen.
  * 
  * @author maik.boettcher@bur-kg.de
  *
@@ -23,18 +27,18 @@ public class BarGraph extends AbstractGraph {
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(BarGraph.class.getName());
 
-	/** die sechs blauen Balkenwerte */
+	/** die blauen Balkenwerte */
 	private double[] blueValues = new double[SIZE];
 
-	/** die sechs roten Balkenwerte */
+	/** die roten Balkenwerte */
 	private double[] redValues = new double[SIZE];
 
 	/** die Beschriftung für die Y-Achse */
-	private String[] axisText = new String[SIZE];
+	private String[] axisText = null;
 
 	/**
-	 * der Index wird ggf. hervorgehoben;
-	 * eine Ganzzahl zwischen 0 bis {@link #SIZE}
+	 * der Index wird ggf. hervorgehoben; eine Ganzzahl zwischen 0 bis
+	 * {@value #SIZE}
 	 */
 	private Integer highlighter = null;
 
@@ -42,73 +46,94 @@ public class BarGraph extends AbstractGraph {
 	public BufferedImage createGraph(int graphSize) {
 
 		final double margin = graphSize * 0.1d;
-		final double strokeSize = (graphSize - 2 * margin) / 11;
-
-		final double y1 = margin;
-		final double y2 = margin + (graphSize * 0.5d);
+		final double top = margin;
+		final double bottom = margin + (graphSize * 0.5d);
+		final double stroke = (graphSize - 2 * margin) / 11;
 
 		final BufferedImage image = createEmptyImage(graphSize);
 		final Graphics2D g2 = (Graphics2D) image.getGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		final BasicStroke stroke = new BasicStroke((float) strokeSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
-		g2.setStroke(stroke);
+		g2.setStroke(new BasicStroke((float) stroke, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
 
 		g2.setFont(smallFont);
 		final FontMetrics fontMetrics = g2.getFontMetrics();
 
-		for (int idx = 0; idx < 6; idx++) {
-			final double x1 = margin + strokeSize * 0.5d + (idx * strokeSize * 2);
+		for (int idx = 0; idx < SIZE; idx++) {
+			final double x1 = margin + stroke * 0.5d + (idx * stroke * 2);
 
 			// Balken-Hintergrund: eine grauen Linie
 			g2.setColor(GraphConstants.getTextColor());
-			g2.draw(new Line2D.Double(x1, y1, x1, y2));
+			g2.draw(new Line2D.Double(x1, top, x1, bottom));
 
-			// Beschriftung
-			final String yt = axisText[idx];
-			if (null != yt) {
-				if (null != highlighter && highlighter.intValue() == idx) {
-					g2.setColor(GraphConstants.getBlueColor());
-				} else {
-					g2.setColor(GraphConstants.getTextColor());
-				}
-
-				final int stringWidth = fontMetrics.stringWidth(yt);
-				final int height = fontMetrics.getHeight();
-
-				g2.drawString(yt, (int) (x1 - (stringWidth * 0.47d)), (int) (y2 + height));
-
-			}
+			// optionale Beschriftung
+			drawAxisText(g2, idx, x1, bottom);
 
 			if (0.05d < redValues[idx]) {
-				final double blue = (y2 - y1) * blueValues[idx] / 100;
+				final double blue = (bottom - top) * blueValues[idx] / 100;
 				final double red = blue * redValues[idx] / 100;
 				// blaue Werte
 				g2.setColor(GraphConstants.getBlueColor());
-				g2.draw(new Line2D.Double(x1, (y2 - blue + red), x1, y2));
+				g2.draw(new Line2D.Double(x1, (bottom - blue + red), x1, bottom));
 				// rote Werte
 				g2.setColor(GraphConstants.getRedColor());
-				g2.draw(new Line2D.Double(x1, (y2 - blue), x1, (y2 - blue + red)));
+				g2.draw(new Line2D.Double(x1, (bottom - blue), x1, (bottom - blue + red)));
 			} else {
-				final double blue = (y2 - y1) * blueValues[idx] / 100;
-				// blaue Werte
+				final double blue = (bottom - top) * blueValues[idx] / 100;
+				// nur blaue Werte
 				g2.setColor(GraphConstants.getBlueColor());
-				g2.draw(new Line2D.Double(x1, (y2 - blue), x1, y2));
+				g2.draw(new Line2D.Double(x1, (bottom - blue), x1, bottom));
 			}
 
 		}
 
 		if (null != highlighter) {
-			final String highlighterText = String.format("%6.2f", blueValues[highlighter.intValue()]);
+			final int idx = highlighter.intValue();
+			final String highlighterText;
+			if (0.05d < redValues[idx]) {
+				highlighterText = String.format("%6.2f/%6.2f", redValues[idx], blueValues[idx]);
+			} else {
+				highlighterText = String.format("%6.2f", blueValues[idx]);
+			}
+
 			g2.setColor(GraphConstants.getTextColor());
-			g2.drawString(highlighterText,
-					(int) ((graphSize - fontMetrics.stringWidth(highlighterText)) * 0.5d),
-					(int) (y2 + (fontMetrics.getHeight() * 2.2d)));
+			g2.drawString(highlighterText, (int) ((graphSize - fontMetrics.stringWidth(highlighterText)) * 0.5d),
+					(int) (bottom + (fontMetrics.getHeight() * 2.2d)));
 		}
 
 		LOG.fine("values painted: " + Arrays.toString(blueValues));
 
 		return image;
+	}
+
+	/**
+	 * Beschriftet einen Balken.
+	 * 
+	 * @param g2
+	 *            die Grafik
+	 * @param index
+	 *            der Balkenindex
+	 * @param x
+	 *            die X-Position
+	 * @param y
+	 *            die Y-Position
+	 */
+	private void drawAxisText(final Graphics2D g2, final int index, final double x, final double y) {
+		final FontMetrics fm = g2.getFontMetrics();
+		final String text = (null == axisText ? null : axisText[index]);
+		if (null != text) {
+			if (null != highlighter && highlighter.intValue() == index) {
+				g2.setColor(GraphConstants.getBlueColor());
+			} else {
+				g2.setColor(GraphConstants.getTextColor());
+			}
+
+			final int stringWidth = fm.stringWidth(text);
+			final int height = fm.getHeight();
+
+			g2.drawString(text, (int) (x - (stringWidth * 0.47d)), (int) (y + height));
+
+		}
 	}
 
 	private double[] truncate(final double[] values) {

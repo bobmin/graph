@@ -7,9 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -32,6 +33,8 @@ public class GraphDemo extends JFrame implements ActionListener {
 
 	private Timer timer = null;
 
+	private int currentHighlighter = 1;
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -48,10 +51,12 @@ public class GraphDemo extends JFrame implements ActionListener {
 		setTitle("Demo: grafische Komponenten");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		final JPanel contentPane = new JPanel(new BorderLayout(0, 0));
-		contentPane.add(new ColorPanel(), BorderLayout.NORTH);
+		contentPane.setBackground(GraphConstants.getBackgroundColor());
+		contentPane.add(new ColorPanel(), BorderLayout.SOUTH);
 		final int size = 5;
 		pieGraph = new PieGraph[size];
 		final JPanel centerPanel = new JPanel(new GridLayout(3, size));
+		centerPanel.setOpaque(false);
 		for (int idx = 0; idx < size; idx++) {
 			pieGraph[idx] = new PieGraph();
 			centerPanel.add(pieGraph[idx]);
@@ -100,6 +105,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 			barGraph[idx].setBlueValues(blueValues);
 			barGraph[idx].setRedValues(redValues);
 			barGraph[idx].setAxisText(axisText);
+			barGraph[idx].setHighlighter(currentHighlighter);
 			barGraph[idx].repaint();
 			// die Texte
 			final String[] values = new String[3];
@@ -114,12 +120,17 @@ public class GraphDemo extends JFrame implements ActionListener {
 			}
 			textGraph[idx].repaint();
 		}
+		currentHighlighter++;
+		if (6 < currentHighlighter) {
+			currentHighlighter = 1;
+		}
 	}
 
 	private static class ColorPanel extends JPanel {
 
 		public ColorPanel() {
 			super(new GridLayout(1, GraphConstants.COLORS.length));
+			setOpaque(false);
 			for (int i = 0; i < GraphConstants.COLORS.length; i++) {
 				final Color c = GraphConstants.COLORS[i];
 				initColorButton("#" + Integer.toHexString(c.getRed()) + Integer.toHexString(c.getGreen())
@@ -128,8 +139,9 @@ public class GraphDemo extends JFrame implements ActionListener {
 		}
 
 		private void initColorButton(final String label, final Color bg) {
-			final JButton x = new JButton(label);
+			final JLabel x = new JLabel(label, SwingConstants.CENTER);
 			x.setBackground(bg);
+			x.setOpaque(true);
 			add(x);
 		}
 
