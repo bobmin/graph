@@ -36,7 +36,7 @@ public class BarGraph extends AbstractGraph {
 	 * der Index wird ggf. hervorgehoben;
 	 * eine Ganzzahl zwischen 0 bis {@link #SIZE}
 	 */
-	private final Integer highlighter = null;
+	private Integer highlighter = null;
 
 	@Override
 	public BufferedImage createGraph(int graphSize) {
@@ -67,7 +67,7 @@ public class BarGraph extends AbstractGraph {
 			// Beschriftung
 			final String yt = axisText[idx];
 			if (null != yt) {
-				if ("5".equals(yt)) {
+				if (null != highlighter && highlighter.intValue() == idx) {
 					g2.setColor(GraphConstants.getBlueColor());
 				} else {
 					g2.setColor(GraphConstants.getTextColor());
@@ -105,6 +105,7 @@ public class BarGraph extends AbstractGraph {
 					(int) ((graphSize - fontMetrics.stringWidth(highlighterText)) * 0.5d),
 					(int) (y2 + (fontMetrics.getHeight() * 2.2d)));
 		}
+
 		LOG.fine("values painted: " + Arrays.toString(blueValues));
 
 		return image;
@@ -156,6 +157,13 @@ public class BarGraph extends AbstractGraph {
 	public void setAxisText(final String[] axisText) {
 		this.axisText = Arrays.copyOf(axisText, 6);
 		LOG.fine("[axisText] assigned: " + Arrays.toString(axisText));
+	}
+
+	public void setHighlighter(int value) {
+		if (1 > value || value > SIZE) {
+			throw new IllegalArgumentException("[0 < x <= SIZE]: " + value);
+		}
+		highlighter = Integer.valueOf(value) - 1;
 	}
 
 }
