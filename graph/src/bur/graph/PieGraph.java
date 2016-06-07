@@ -60,13 +60,18 @@ public class PieGraph extends AbstractGraph {
 		g2.draw(new Arc2D.Double(margin, margin, (graphSize - 2 * margin), (graphSize - 2 * margin), 90,
 				(360.0d * value / 100), Arc2D.OPEN));
 
-		g2.setColor(GraphConstants.getTextColor());
-
 		final String vauleString = String.valueOf(value);
+
+		if (0 == value || 74 < value) {
+			g2.setColor(GraphConstants.getTextColor());
+		} else {
+			g2.setColor(GraphConstants.getRedColor());
+		}
 
 		switch (mode) {
 		case TWO_TEXTLINES:
 			paintString(g2, graphSize, bigFont, vauleString, null, null, 0);
+			g2.setColor(GraphConstants.getTextColor());
 			if (null != unit) {
 				paintString(g2, graphSize, smallFont, unit, null, null, 1);
 			}
@@ -80,6 +85,7 @@ public class PieGraph extends AbstractGraph {
 			} else {
 				paintString(g2, graphSize, bigFont, vauleString, smallFont, unit, 0);
 			}
+			g2.setColor(GraphConstants.getTextColor());
 			if (null != text) {
 				paintString(g2, graphSize, smallFont, text, null, null, 1);
 			}
