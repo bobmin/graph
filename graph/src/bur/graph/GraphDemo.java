@@ -99,11 +99,10 @@ public class GraphDemo extends JFrame implements ActionListener {
 			final double[] redValues = new double[6];
 			for (int vIdx = 0; vIdx < 6; vIdx++) {
 				final Random rand = new Random();
-				blueValues[vIdx] = (100.0d * rand.nextDouble());
+				blueValues[vIdx] = (1000.0d * rand.nextDouble());
 				redValues[vIdx] = (blueValues[vIdx] * 0.6d * rand.nextDouble());
 			}
-			barGraph[idx].setBlueValues(blueValues);
-			barGraph[idx].setRedValues(redValues);
+			barGraph[idx].setValues(blueValues, redValues);
 			barGraph[idx].setAxisText(axisText);
 			barGraph[idx].setHighlighter(currentHighlighter);
 			barGraph[idx].repaint();
