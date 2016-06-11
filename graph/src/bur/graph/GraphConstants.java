@@ -19,8 +19,7 @@ public class GraphConstants {
 			{ "323232", "F0F0F0", "0092CC", "779933", "DCD427", "FF3333" },
 			{ "282828", "F0F0F0", "087099", "5C7829", "B7B327", "CC3333" },
 			{ "1d2126", "b6babf", "5f88b0", "70bf53", "d89b28", "eb5368" },
-			{ "303030", "cacaca", "0065a2", "00a1b5", "b8af28", "b82828" },
-	};
+			{ "303030", "cacaca", "0065a2", "00a1b5", "b8af28", "b82828" }, };
 
 	public static final Color[] COLORS = new Color[6];
 
@@ -101,6 +100,25 @@ public class GraphConstants {
 			}
 		}
 		return x;
+	}
+
+	/**
+	 * Liefert eine Farbe, wenn Hilfslinien gezeichnet werden sollen. Wird
+	 * <code>null</code> geliefert, werden keine Hilfslinien gezeichnet.
+	 * 
+	 * @return ein Objekt oder <code>null</code>
+	 */
+	public static Color debugColor() {
+		return null; // Color.yellow;
+	}
+
+	/**
+	 * Liefert <code>true</code> wenn Hilfslinien gezeichnet werden sollen.
+	 * 
+	 * @return <code>true</code> wenn Hilfslinien gewünscht
+	 */
+	public static boolean isDebugOn() {
+		return (null != debugColor());
 	}
 
 }

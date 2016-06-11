@@ -102,6 +102,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 				blueValues[vIdx] = (1000.0d * rand.nextDouble());
 				redValues[vIdx] = (blueValues[vIdx] * 0.6d * rand.nextDouble());
 			}
+			barGraph[idx].setTitle(texte[new Random().nextInt(texte.length - 1)]);
 			barGraph[idx].setValues(blueValues, redValues);
 			barGraph[idx].setAxisText(axisText);
 			barGraph[idx].setHighlighter(currentHighlighter);
