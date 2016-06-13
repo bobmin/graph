@@ -43,6 +43,9 @@ public class BarGraph extends AbstractGraph {
 	 */
 	private Integer highlighter = null;
 
+	/** die Hilfslinieneinstellung: <code>true</code> zeichnet Linien */
+	private final boolean debugging = false;
+
 	@Override
 	public BufferedImage createGraph(int graphSize) {
 		final double margin = graphSize * 0.1d;
@@ -111,7 +114,7 @@ public class BarGraph extends AbstractGraph {
 		}
 
 		// Hilfslinien zeichnen
-		if (GraphConstants.isDebugOn()) {
+		if (debugging) {
 			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
 			g2.setColor(GraphConstants.debugColor());
 			// Rahmen

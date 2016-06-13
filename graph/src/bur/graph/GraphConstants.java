@@ -103,22 +103,12 @@ public class GraphConstants {
 	}
 
 	/**
-	 * Liefert eine Farbe, wenn Hilfslinien gezeichnet werden sollen. Wird
-	 * <code>null</code> geliefert, werden keine Hilfslinien gezeichnet.
+	 * Liefert eine Farbe für Hilfslinien.
 	 * 
-	 * @return ein Objekt oder <code>null</code>
+	 * @return ein Objekt, niemals <code>null</code>
 	 */
 	public static Color debugColor() {
-		return null; // Color.yellow;
-	}
-
-	/**
-	 * Liefert <code>true</code> wenn Hilfslinien gezeichnet werden sollen.
-	 * 
-	 * @return <code>true</code> wenn Hilfslinien gewünscht
-	 */
-	public static boolean isDebugOn() {
-		return (null != debugColor());
+		return Color.yellow;
 	}
 
 }

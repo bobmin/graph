@@ -49,8 +49,6 @@ public class TextGraph extends AbstractGraph {
 
 			final float b = (graphSize * 0.45f);
 
-			System.out.println(graphSize + ", " + height + ", " + b);
-
 			float x, y;
 			int w;
 
