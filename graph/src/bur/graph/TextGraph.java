@@ -1,5 +1,6 @@
 package bur.graph;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -76,6 +77,19 @@ public class TextGraph extends AbstractGraph {
 		} else {
 			throw new IllegalStateException("[mode] unknown: " + mode);
 		}
+
+		// Hilfslinien zeichnen
+		if (isDebugging()) {
+			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
+			g2.setColor(GraphConstants.debugColor());
+			// Rahmen
+			g2.draw(new Rectangle2D.Double(1, 1, graphSize - 2, graphSize - 2));
+			// Mittellinie
+			g2.drawLine(0, (int) (graphSize * 0.5f), graphSize, (int) (graphSize * 0.5f));
+		}
+
+		g2.dispose();
+
 		return image;
 	}
 

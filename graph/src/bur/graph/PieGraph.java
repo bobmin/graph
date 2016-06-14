@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
@@ -93,6 +94,18 @@ public class PieGraph extends AbstractGraph {
 		default:
 			throw new IllegalStateException("[mode] unknown: " + mode);
 		}
+
+		// Hilfslinien zeichnen
+		if (isDebugging()) {
+			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
+			g2.setColor(GraphConstants.debugColor());
+			// Rahmen
+			g2.draw(new Rectangle2D.Double(1, 1, graphSize - 2, graphSize - 2));
+			// Mittellinie
+			g2.drawLine(0, (int) (graphSize * 0.5f), graphSize, (int) (graphSize * 0.5f));
+		}
+
+		g2.dispose();
 
 		return image;
 

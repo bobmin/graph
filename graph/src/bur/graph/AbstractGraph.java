@@ -30,6 +30,9 @@ public abstract class AbstractGraph extends JComponent {
 
 	Font smallFont = null;
 
+	/** die Hilfslinieneinstellung: <code>true</code> zeichnet Linien */
+	private boolean debugging = false;
+
 	/**
 	 * Instanziiert das Objekt.
 	 */
@@ -117,6 +120,22 @@ public abstract class AbstractGraph extends JComponent {
 			g2.drawString(textTwo, x + stringWidth + 1, y);
 		}
 
+	}
+
+	/**
+	 * Schaltet das Zeichnen der Hilfslinien an und aus.
+	 */
+	public void toogleDebug() {
+		debugging = (!debugging);
+	}
+
+	/**
+	 * Liefert <code>true</code> wenn Hilfslinien gezeichnet werden sollen.
+	 * 
+	 * @return <code>true</code> die Hilfslinien sollen gezeichnet werden
+	 */
+	public boolean isDebugging() {
+		return debugging;
 	}
 
 }
