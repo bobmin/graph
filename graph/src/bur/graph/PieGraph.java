@@ -26,11 +26,15 @@ public class PieGraph extends AbstractGraph {
 	/** die Zahl von 0 bis 100 */
 	private int value = 0;
 
-	/** die Ma�einheit */
+	/** die Maßeinheit */
 	private String unit = null;
 
 	/** der Zusatztext */
 	private String text = null;
+
+	private int red = 49;
+
+	private int yellow = 74;
 
 	/**
 	 * Instanziiert das Objekt.
@@ -63,8 +67,10 @@ public class PieGraph extends AbstractGraph {
 
 		final String vauleString = String.valueOf(value);
 
-		if (0 == value || 74 < value) {
+		if (0 == value || yellow < value) {
 			g2.setColor(GraphConstants.getTextColor());
+		} else if (red < value) {
+			g2.setColor(GraphConstants.getYellowColor());
 		} else {
 			g2.setColor(GraphConstants.getRedColor());
 		}
@@ -112,7 +118,7 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt die Betriebsart der Anzeige. Wird <code>null</code> �bergeben, wird
+	 * Setzt die Betriebsart der Anzeige. Wird <code>null</code> übergeben, wird
 	 * {@link Mode#TWO_TEXTLINES} verwendet.
 	 * 
 	 * @param mode
@@ -123,12 +129,12 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt den Wert. G�ltige Werte sind Zahlen von 0 bis 100.
+	 * Setzt den Wert. Gültige Werte sind Zahlen von 0 bis 100.
 	 * 
 	 * @param x
 	 *            der neue Wert
 	 * @throws IllegalArgumentException
-	 *             wenn Wert ausserhalb des G�ltigkeitsbereichs
+	 *             wenn Wert ausserhalb des Gültigkeitsbereichs
 	 */
 	public void setValue(final int x) {
 		if (!(0 <= x && x <= 100)) {
@@ -139,11 +145,11 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt die Ma�einheit. Wird <code>null</code> �bergeben, wird keine
-	 * Ma�einheit angezeigt.
+	 * Setzt die Maßeinheit. Wird <code>null</code> übergeben, wird keine
+	 * Maßeinheit angezeigt.
 	 * 
 	 * @param x
-	 *            die Ma�einheit
+	 *            die Maßeinheit
 	 */
 	public void setUnit(final String x) {
 		this.unit = x;
@@ -151,7 +157,7 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	/**
-	 * Setzt den Zusatztext. Wird <code>null</code> �bergeben, wird keine
+	 * Setzt den Zusatztext. Wird <code>null</code> übergeben, wird keine
 	 * Zusatztext angezeigt.
 	 * 
 	 * @param x
@@ -160,6 +166,19 @@ public class PieGraph extends AbstractGraph {
 	public void setText(final String x) {
 		this.text = x;
 		LOG.info("text assigned: " + x);
+	}
+
+	/**
+	 * Setzt die Werte für den Farbwechsel.
+	 * 
+	 * @param red
+	 *            unter diesem Wert roter Wert
+	 * @param yellow
+	 *            unter diesem Wert gelber Wert
+	 */
+	public void setColorLimits(int red, int yellow) {
+		this.red = red;
+		this.yellow = yellow;
 	}
 
 	/**
