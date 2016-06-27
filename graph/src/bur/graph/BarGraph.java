@@ -43,6 +43,9 @@ public class BarGraph extends AbstractGraph {
 	 */
 	private Integer highlighter = null;
 
+	/** das Format der zweiten Zeile mit den Werten */
+	private String highlighterFormat = "%.0f/%.0f";
+
 	@Override
 	public BufferedImage createGraph(int graphSize) {
 		final double margin = graphSize * 0.1d;
@@ -105,7 +108,7 @@ public class BarGraph extends AbstractGraph {
 		if (null != values && null != highlighter) {
 			final int idx = highlighter.intValue();
 			final String highlighterText;
-			highlighterText = String.format("%.0f/%.0f", values.origRedValues[idx], values.origBlueValues[idx]);
+			highlighterText = String.format(highlighterFormat, values.origRedValues[idx], values.origBlueValues[idx]);
 			g2.setColor(GraphConstants.getTextColor());
 			final int tx0 = (int) (graphSize - margin - (fontMetrics.getHeight() * 0));
 			g2.drawString(highlighterText, (int) ((graphSize - fontMetrics.stringWidth(highlighterText)) * 0.5d), tx0);
@@ -228,6 +231,16 @@ public class BarGraph extends AbstractGraph {
 			throw new IllegalArgumentException("[0 < x <= SIZE]: " + value);
 		}
 		highlighter = Integer.valueOf(value) - 1;
+	}
+
+	/**
+	 * Setzt das Format der zweiten Zeile vom Highlighter.
+	 * 
+	 * @param value
+	 *            das Format
+	 */
+	public void setHighlighterFormat(String value) {
+		this.highlighterFormat = value;
 	}
 
 	private static class Data {
