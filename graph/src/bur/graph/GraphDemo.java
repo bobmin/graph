@@ -14,6 +14,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import bur.graph.BarGraph.Mode;
+
 /**
  * Startet eine Demo zu den verschiedenen grafischem Komponenten.
  * 
@@ -103,7 +105,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 				redValues[vIdx] = (blueValues[vIdx] * 0.6d * rand.nextDouble());
 			}
 			barGraph[idx].setTitle(texte[new Random().nextInt(texte.length - 1)]);
-			barGraph[idx].setValues(blueValues, redValues);
+			barGraph[idx].setValues(Mode.RED_IN_BLUE, blueValues, redValues, 0.0);
 			barGraph[idx].setAxisText(axisText);
 			barGraph[idx].setHighlighter(currentHighlighter);
 			barGraph[idx].repaint();

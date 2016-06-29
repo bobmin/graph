@@ -141,7 +141,7 @@ public class PieGraph extends AbstractGraph {
 			throw new IllegalArgumentException("error \"0 <= [x] <= 100\" --> x = " + x);
 		}
 		this.value = x;
-		LOG.info("value assigned: " + x);
+		LOG.fine("value assigned: " + x);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class PieGraph extends AbstractGraph {
 	 */
 	public void setUnit(final String x) {
 		this.unit = x;
-		LOG.info("unit assigned: " + x);
+		LOG.fine("unit assigned: " + x);
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class PieGraph extends AbstractGraph {
 	 */
 	public void setText(final String x) {
 		this.text = x;
-		LOG.info("text assigned: " + x);
+		LOG.fine("text assigned: " + x);
 	}
 
 	/**

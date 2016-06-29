@@ -125,8 +125,8 @@ public abstract class AbstractGraph extends JComponent {
 	/**
 	 * Schaltet das Zeichnen der Hilfslinien an und aus.
 	 */
-	public void toogleDebug() {
-		debugging = (!debugging);
+	public void setDebug(final boolean value) {
+		debugging = value;
 	}
 
 	/**

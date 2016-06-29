@@ -1,6 +1,7 @@
 package bur.graph;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -60,7 +61,7 @@ public class BarGraph extends AbstractGraph {
 		final Graphics2D g2 = (Graphics2D) image.getGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		g2.setStroke(new BasicStroke((float) stroke, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
+		g2.setStroke(new BasicStroke((float) stroke, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
 
 		g2.setFont(smallFont);
 		final FontMetrics fontMetrics = g2.getFontMetrics();
@@ -83,23 +84,49 @@ public class BarGraph extends AbstractGraph {
 			final int tx2 = (int) (graphSize - margin - (fontMetrics.getHeight() * 2));
 			drawAxisText(g2, idx, x1, tx2);
 
-			if (null != values && 0.05d < values.origBlueValues[idx]) {
-				if (0.05d < values.normRedValues[idx]) {
-					final double blue = (bottom - top) * values.normBlueValues[idx] / 100;
-					final double red = blue * values.normRedValues[idx] / 100;
-					// blaue Werte
-					g2.setColor(GraphConstants.getBlueColor());
-					g2.draw(new Line2D.Double(x1, (bottom - blue + red), x1, bottom));
-					// rote Werte
-					g2.setColor(GraphConstants.getRedColor());
-					g2.draw(new Line2D.Double(x1, (bottom - blue), x1, (bottom - blue + red)));
+			if (null != values) {
+
+				if (Mode.RED_IN_BLUE == values.mode) {
+					// kein blauer Wert = nichts zu zeichnen
+					if (0.0 < values.normBlueValues[idx]) {
+						if (0.0 > values.normRedValues[idx]) {
+							// nur blauen Wert zeichnen
+							final double blue = (bottom - top) * values.normBlueValues[idx] / 100;
+							g2.setColor(GraphConstants.getBlueColor());
+							g2.draw(new Line2D.Double(x1, (bottom - blue), x1, bottom));
+						} else {
+							// blaue und rote Werte zeichnen
+							final double blue = (bottom - top) * values.normBlueValues[idx] / 100;
+							final double red = blue * values.normRedValues[idx] / 100;
+							// ...blauer Werte
+							g2.setColor(GraphConstants.getBlueColor());
+							g2.draw(new Line2D.Double(x1, (bottom - blue + red), x1, bottom));
+							// ...roter Werte
+							g2.setColor(GraphConstants.getRedColor());
+							g2.draw(new Line2D.Double(x1, (bottom - blue), x1, (bottom - blue + red)));
+						}
+					}
+				} else if (Mode.RED_AND_BLUE_START_BY_ZERO == values.mode) {
+					if (0.0 < Math.max(values.normBlueValues[idx], values.normRedValues[idx])) {
+						// blaue und rote Werte zeichnen
+						if (values.normBlueValues[idx] > values.normRedValues[idx]) {
+							drawColorLine(g2, GraphConstants.getBlueColor(), x1, top, bottom,
+									values.normBlueValues[idx]);
+							drawColorLine(g2, GraphConstants.getRedColor(), x1, top, bottom, values.normRedValues[idx]);
+						} else {
+							drawColorLine(g2, GraphConstants.getBlueColor(), x1, top, bottom,
+									values.normRedValues[idx]);
+							drawColorLine(g2, GraphConstants.getRedColor(), x1, top, bottom,
+									values.normBlueValues[idx]);
+						}
+					}
 				} else {
-					final double blue = (bottom - top) * values.normBlueValues[idx] / 100;
-					// nur blaue Werte
-					g2.setColor(GraphConstants.getBlueColor());
-					g2.draw(new Line2D.Double(x1, (bottom - blue), x1, bottom));
+					throw new IllegalStateException("[mode] unknown: " + values.mode);
 				}
-				LOG.fine("values painted: " + Arrays.toString(values.normBlueValues));
+
+				LOG.fine("values painted, mode = " + values.mode + ", blue = " + Arrays.toString(values.normBlueValues)
+						+ ", red = "
+						+ Arrays.toString(values.normRedValues));
 			}
 
 		}
@@ -132,6 +159,14 @@ public class BarGraph extends AbstractGraph {
 		g2.dispose();
 
 		return image;
+	}
+
+	private void drawColorLine(final Graphics2D g2, final Color color, final double x, final double top,
+			final double bottom, final double value) {
+		g2.setColor(color);
+		final double pixel = (bottom - top) * value / 100.0;
+		g2.draw(new Line2D.Double(x, (bottom - pixel), x, bottom));
+		LOG.info("line plotted, top = " + top + ", bottom = " + bottom + ", value = " + value + ", pixel = " + pixel);
 	}
 
 	/**
@@ -190,8 +225,8 @@ public class BarGraph extends AbstractGraph {
 	 * @param blueValues
 	 *            die Werte
 	 */
-	public void setValues(final double[] blueValues) {
-		this.values = new Data(blueValues, null);
+	public void setValues(final double[] blueValues, final double initMax) {
+		this.values = new Data(Mode.RED_IN_BLUE, blueValues, null, initMax);
 		LOG.fine("[values] assigned: " + values);
 	}
 
@@ -203,8 +238,10 @@ public class BarGraph extends AbstractGraph {
 	 * @param redValues
 	 *            die "roten" Werte
 	 */
-	public void setValues(final double[] blueValues, final double[] redValues) {
-		this.values = new Data(blueValues, redValues);
+	public void setValues(final Mode mode,
+			final double[] blueValues, final double[] redValues,
+			final double initMax) {
+		this.values = new Data(mode, blueValues, redValues, initMax);
 		LOG.fine("[values] assigned: " + values);
 	}
 
@@ -243,7 +280,20 @@ public class BarGraph extends AbstractGraph {
 		this.highlighterFormat = value;
 	}
 
+	/**
+	 * Definiert die Anzeigebetriebsarten.
+	 */
+	public static enum Mode {
+		RED_IN_BLUE, RED_AND_BLUE_START_BY_ZERO
+	}
+
+	/**
+	 * Beschreibt die Daten zum Diagramm.
+	 */
 	private static class Data {
+
+		/** die Betriebsart zur Berechnung/Anzeige */
+		private final Mode mode;
 
 		/** die "echten" blauen Balkenwerte */
 		private final double[] origBlueValues;
@@ -262,21 +312,37 @@ public class BarGraph extends AbstractGraph {
 		 * entspricht dem Gesamtwert im jeweiligen Balken. Der Rotwert ist
 		 * optional und wird von oben nach unten in den Blauwert gezeichnet.
 		 * 
+		 * @param mode
+		 *            die Betriebsart
 		 * @param blueValues
 		 *            die "echten" Blauwerte
 		 * @param redValues
 		 *            die "echten" Rotwerte
+		 * @param initMax
 		 */
-		private Data(final double[] blueValues, final double[] redValues) {
+		private Data(final Mode mode,
+				final double[] blueValues, final double[] redValues,
+				final double initMax) {
+			this.mode = mode;
 			// Originalwerte
 			this.origBlueValues = (null == blueValues ? new double[SIZE] : Arrays.copyOf(blueValues, SIZE));
 			this.origRedValues = (null == redValues ? new double[SIZE] : Arrays.copyOf(redValues, SIZE));
 			// Normalisierung
 			this.normBlueValues = new double[SIZE];
 			this.normRedValues = new double[SIZE];
-			double max = 0.0d;
+			double max = initMax;
 			for (int idx = 0; idx < SIZE; idx++) {
-				max = Math.max(origBlueValues[idx] + origRedValues[idx], max);
+				if (Mode.RED_IN_BLUE == mode) {
+					max = Math.max(origBlueValues[idx] + origRedValues[idx], max);
+				} else if (Mode.RED_AND_BLUE_START_BY_ZERO == mode) {
+					if (origBlueValues[idx] >= origRedValues[idx]) {
+						max = Math.max(origBlueValues[idx], max);
+					} else {
+						max = Math.max(origRedValues[idx], max);
+					}
+				} else {
+					throw new IllegalStateException("[mode] unknown: " + mode);
+				}
 			}
 			for (int idx = 0; idx < SIZE; idx++) {
 				normBlueValues[idx] = origBlueValues[idx] * 100.0d / max;

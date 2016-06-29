@@ -71,7 +71,21 @@ public class TextGraph extends AbstractGraph {
 			debug(g2, 3, 3, graphSize - 6, graphSize - 6);
 
 		} else if (mode == Mode.ONE_BIG_TWO_SMALL) {
-			paintString(g2, graphSize, bigFont, string(0), null, null, 0);
+//			paintString(g2, graphSize, bigFont, string(0), null, null, 0);
+
+			g2.setFont(bigFont);
+
+			final String t = string(0);
+
+			final FontMetrics fontMetrics = g2.getFontMetrics();
+			final int stringWidth = fontMetrics.stringWidth(t);
+			final int height = fontMetrics.getHeight();
+
+			final float x = ((graphSize - stringWidth) * 0.5f);
+			final float y = (graphSize * 0.25f) + fontMetrics.getMaxAscent() * 0.5f;
+
+			g2.drawString(t, x, y);
+
 			paintString(g2, graphSize, smallFont, string(1), null, null, 1);
 			paintString(g2, graphSize, smallFont, string(2), null, null, 2);
 		} else {
@@ -102,34 +116,6 @@ public class TextGraph extends AbstractGraph {
 			g2.draw(new Rectangle2D.Float(x, y, width, height));
 			g2.setColor(color);
 		}
-	}
-
-	private void paintText(final Graphics2D g2, final int graphSize,
-			final Font font, final String text,
-			final Font fontTwo, final String textTwo,
-			float offset) {
-		g2.setFont(font);
-
-		final FontMetrics fontMetrics = g2.getFontMetrics();
-		final int stringWidth = fontMetrics.stringWidth(text);
-		final int height = fontMetrics.getHeight();
-
-		final float x = ((graphSize - stringWidth) * 0.5f);
-		final float y = (graphSize * 0.5f + (height * offset));
-
-		g2.drawString(text, x, y);
-
-		// zweiter Text (Standard: rechts daneben, nicht mittig)
-		if (null != textTwo) {
-			if (null != fontTwo) {
-				g2.setFont(fontTwo);
-			}
-			final FontMetrics fontMetricsTwo = g2.getFontMetrics();
-			final int stringWidthTwo = fontMetricsTwo.stringWidth(text);
-			// g2.setColor(g2.getColor().darker());
-			g2.drawString(textTwo, x + stringWidth + 1, y);
-		}
-
 	}
 
 	private String string(final int index) {
