@@ -166,7 +166,7 @@ public class BarGraph extends AbstractGraph {
 		g2.setColor(color);
 		final double pixel = (bottom - top) * value / 100.0;
 		g2.draw(new Line2D.Double(x, (bottom - pixel), x, bottom));
-		LOG.info("line plotted, top = " + top + ", bottom = " + bottom + ", value = " + value + ", pixel = " + pixel);
+		LOG.fine("line plotted, top = " + top + ", bottom = " + bottom + ", value = " + value + ", pixel = " + pixel);
 	}
 
 	/**
