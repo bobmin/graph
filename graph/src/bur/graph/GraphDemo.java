@@ -5,7 +5,10 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,6 +27,9 @@ import bur.graph.BarGraph.Mode;
  */
 public class GraphDemo extends JFrame implements ActionListener {
 
+	/** der Logger */
+	private static final Logger LOG = Logger.getLogger(GraphDemo.class.getName());
+
 	/** die Donut-Grafiken */
 	private final PieGraph[] pieGraph;
 
@@ -33,9 +39,17 @@ public class GraphDemo extends JFrame implements ActionListener {
 	/** die Balken-Grafiken */
 	private final BarGraph[] barGraph;
 
+	/** die Heatmap-Grafiken */
+	private final HeatmapGraph[] heatmapGraph;
+
+	/** der Zeitgeber */
 	private Timer timer = null;
 
+	/** die Hervorhebung */
 	private int currentHighlighter = 1;
+
+	/** die Fehlersuche */
+	private boolean debug = false;
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -57,7 +71,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 		contentPane.add(new ColorPanel(), BorderLayout.SOUTH);
 		final int size = 5;
 		pieGraph = new PieGraph[size];
-		final JPanel centerPanel = new JPanel(new GridLayout(3, size));
+		final JPanel centerPanel = new JPanel(new GridLayout(4, size));
 		centerPanel.setOpaque(false);
 		for (int idx = 0; idx < size; idx++) {
 			pieGraph[idx] = new PieGraph();
@@ -73,10 +87,34 @@ public class GraphDemo extends JFrame implements ActionListener {
 			barGraph[idx] = new BarGraph();
 			centerPanel.add(barGraph[idx]);
 		}
+		heatmapGraph = new HeatmapGraph[size];
+		for (int idx = 0; idx < size; idx++) {
+			heatmapGraph[idx] = new HeatmapGraph(10, 5);
+			centerPanel.add(heatmapGraph[idx]);
+		}
 		contentPane.add(centerPanel, BorderLayout.CENTER);
 		getContentPane().add(contentPane);
 		setSize(650, 500);
 		setLocationRelativeTo(null);
+		// Keyboard
+		addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				final char cmd = e.getKeyChar();
+				if ('d' == cmd) {
+					debug = !debug;
+					for (int idx = 0; idx < size; idx++) {
+						pieGraph[idx].setDebug(debug);
+						textGraph[idx].setDebug(debug);
+						barGraph[idx].setDebug(debug);
+						heatmapGraph[idx].setDebug(debug);
+					}
+					LOG.info("set [debug]: " + debug);
+				}
+			}
+
+		});
 	}
 
 	private void startTimer() {
@@ -121,6 +159,8 @@ public class GraphDemo extends JFrame implements ActionListener {
 				textGraph[idx].setMode(TextGraph.Mode.TWO_BIG);
 			}
 			textGraph[idx].repaint();
+			// die Heatmap
+			heatmapGraph[idx].repaint();
 		}
 		currentHighlighter++;
 		if (6 < currentHighlighter) {
