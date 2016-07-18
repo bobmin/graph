@@ -1,8 +1,6 @@
 package bur.graph;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -28,19 +26,20 @@ public class TextGraph extends AbstractGraph {
 	private String[] values = null;
 
 	@Override
-	public BufferedImage createGraph(int graphSize) {
-		final BufferedImage image = createEmptyImage(graphSize);
+	public BufferedImage createGraph() {
+		final BufferedImage image = createEmptyImage();
 		final Graphics2D g2 = (Graphics2D) image.getGraphics();
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setColor(GraphConstants.getTextColor());
 
-		final Font tFont = GraphConstants.ROBOTO_BOLD.deriveFont(graphSize * 0.2222f);
+		// final Font tFont = GraphConstants.ROBOTO_BOLD.deriveFont(graphSize *
+		// 0.2222f);
 
 		if (mode == Mode.TWO_BIG) {
 
-			g2.setFont(tFont);
+			g2.setFont(bigFont);
 			final FontMetrics fontMetrics = g2.getFontMetrics();
 
 			final String t1 = string(0);
@@ -71,7 +70,7 @@ public class TextGraph extends AbstractGraph {
 			debug(g2, 3, 3, graphSize - 6, graphSize - 6);
 
 		} else if (mode == Mode.ONE_BIG_TWO_SMALL) {
-//			paintString(g2, graphSize, bigFont, string(0), null, null, 0);
+			// paintString(g2, graphSize, bigFont, string(0), null, null, 0);
 
 			g2.setFont(bigFont);
 
@@ -86,29 +85,20 @@ public class TextGraph extends AbstractGraph {
 
 			g2.drawString(t, x, y);
 
-			paintString(g2, graphSize, smallFont, string(1), null, null, 1);
-			paintString(g2, graphSize, smallFont, string(2), null, null, 2);
+			paintString(g2, smallFont, string(1), null, null, 1);
+			paintString(g2, smallFont, string(2), null, null, 2);
 		} else {
 			throw new IllegalStateException("[mode] unknown: " + mode);
 		}
 
-		// Hilfslinien zeichnen
-		if (isDebugging()) {
-			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
-			g2.setColor(GraphConstants.debugColor());
-			// Rahmen
-			g2.draw(new Rectangle2D.Double(1, 1, graphSize - 2, graphSize - 2));
-			// Mittellinie
-			g2.drawLine(0, (int) (graphSize * 0.5f), graphSize, (int) (graphSize * 0.5f));
-		}
+		paintDebug(g2);
 
 		g2.dispose();
 
 		return image;
 	}
 
-	private void debug(final Graphics2D g2,
-			final float x, final float y, final float width, final float height) {
+	private void debug(final Graphics2D g2, final float x, final float y, final float width, final float height) {
 		final boolean debugOn = false;
 		if (debugOn) {
 			final Color color = g2.getColor();

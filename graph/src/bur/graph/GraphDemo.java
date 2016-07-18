@@ -89,7 +89,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 		}
 		heatmapGraph = new HeatmapGraph[size];
 		for (int idx = 0; idx < size; idx++) {
-			heatmapGraph[idx] = new HeatmapGraph(10, 5);
+			heatmapGraph[idx] = new HeatmapGraph(8, 4);
 			centerPanel.add(heatmapGraph[idx]);
 		}
 		contentPane.add(centerPanel, BorderLayout.CENTER);

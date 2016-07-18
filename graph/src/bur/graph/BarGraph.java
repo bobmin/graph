@@ -6,7 +6,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -48,15 +47,14 @@ public class BarGraph extends AbstractGraph {
 	private String highlighterFormat = "%.0f/%.0f";
 
 	@Override
-	public BufferedImage createGraph(int graphSize) {
-		final double margin = graphSize * 0.1d;
+	public BufferedImage createGraph() {
 
 		final double stroke = (graphSize - 2 * margin) / 11;
 
 		final double top = margin;
 		final double bottom = (graphSize * 0.5d) - stroke * 0.5f;
 
-		final BufferedImage image = createEmptyImage(graphSize);
+		final BufferedImage image = createEmptyImage();
 
 		final Graphics2D g2 = (Graphics2D) image.getGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -125,8 +123,7 @@ public class BarGraph extends AbstractGraph {
 				}
 
 				LOG.fine("values painted, mode = " + values.mode + ", blue = " + Arrays.toString(values.normBlueValues)
-						+ ", red = "
-						+ Arrays.toString(values.normRedValues));
+						+ ", red = " + Arrays.toString(values.normRedValues));
 			}
 
 		}
@@ -141,20 +138,7 @@ public class BarGraph extends AbstractGraph {
 			g2.drawString(highlighterText, (int) ((graphSize - fontMetrics.stringWidth(highlighterText)) * 0.5d), tx0);
 		}
 
-		// Hilfslinien zeichnen
-		if (isDebugging()) {
-			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
-			g2.setColor(GraphConstants.debugColor());
-			// Rahmen
-			g2.draw(new Rectangle2D.Double(1, 1, graphSize - 2, graphSize - 2));
-			// Mittellinie
-			g2.drawLine(0, (int) (graphSize * 0.5f), graphSize, (int) (graphSize * 0.5f));
-			// drei Textzeilen
-			for (int i = 0; i < 3; i++) {
-				final int tx = (int) (graphSize - margin - (fontMetrics.getHeight() * i));
-				g2.drawLine(0, tx, graphSize, tx);
-			}
-		}
+		paintDebug(g2);
 
 		g2.dispose();
 
@@ -238,9 +222,7 @@ public class BarGraph extends AbstractGraph {
 	 * @param redValues
 	 *            die "roten" Werte
 	 */
-	public void setValues(final Mode mode,
-			final double[] blueValues, final double[] redValues,
-			final double initMax) {
+	public void setValues(final Mode mode, final double[] blueValues, final double[] redValues, final double initMax) {
 		this.values = new Data(mode, blueValues, redValues, initMax);
 		LOG.fine("[values] assigned: " + values);
 	}
@@ -320,9 +302,7 @@ public class BarGraph extends AbstractGraph {
 		 *            die "echten" Rotwerte
 		 * @param initMax
 		 */
-		private Data(final Mode mode,
-				final double[] blueValues, final double[] redValues,
-				final double initMax) {
+		private Data(final Mode mode, final double[] blueValues, final double[] redValues, final double initMax) {
 			this.mode = mode;
 			// Originalwerte
 			this.origBlueValues = (null == blueValues ? new double[SIZE] : Arrays.copyOf(blueValues, SIZE));

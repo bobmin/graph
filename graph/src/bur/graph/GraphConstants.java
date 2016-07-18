@@ -103,12 +103,21 @@ public class GraphConstants {
 	}
 
 	/**
-	 * Liefert eine Farbe für Hilfslinien.
+	 * Liefert die "erste Farbe" für Hilfslinien.
 	 * 
 	 * @return ein Objekt, niemals <code>null</code>
 	 */
-	public static Color debugColor() {
+	public static Color debugColorOne() {
 		return Color.yellow;
+	}
+
+	/**
+	 * Liefert die "zweite Farbe" für Hilfslinien.
+	 * 
+	 * @return ein Objekt, niemals <code>null</code>
+	 */
+	public static Color debugColorTwo() {
+		return Color.green;
 	}
 
 }

@@ -1,6 +1,5 @@
 package bur.graph;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
@@ -28,8 +27,7 @@ public class HeatmapGraph extends AbstractGraph {
 	}
 
 	@Override
-	public BufferedImage createGraph(int graphSize) {
-		final double margin = graphSize * 0.1d;
+	public BufferedImage createGraph() {
 
 		final double top = margin;
 		final double bottom = (graphSize * 0.5d);
@@ -37,7 +35,7 @@ public class HeatmapGraph extends AbstractGraph {
 		double width = graphSize - (2 * margin);
 		double height = bottom - top;
 
-		final BufferedImage image = createEmptyImage(graphSize);
+		final BufferedImage image = createEmptyImage();
 
 		final Graphics2D g2 = (Graphics2D) image.getGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -63,15 +61,7 @@ public class HeatmapGraph extends AbstractGraph {
 			}
 		}
 
-		// Hilfslinien zeichnen
-		if (isDebugging()) {
-			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
-			g2.setColor(GraphConstants.debugColor());
-			// Rahmen
-			g2.draw(new Rectangle2D.Double(1, 1, graphSize - 2, graphSize - 2));
-			// Mittellinie
-			g2.drawLine(0, (int) (graphSize * 0.5f), graphSize, (int) (graphSize * 0.5f));
-		}
+		paintDebug(g2);
 
 		g2.dispose();
 
