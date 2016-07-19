@@ -1,11 +1,9 @@
 package bur.graph;
 
-import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -15,9 +13,6 @@ import java.awt.image.BufferedImage;
  *
  */
 public class TextGraph extends AbstractGraph {
-
-	/** Konstante für fehlenden Text */
-	private static final String UNKNOWN = "???";
 
 	/** die Anzeigebetriebsart */
 	private Mode mode = Mode.ONE_BIG_TWO_SMALL;
@@ -56,8 +51,8 @@ public class TextGraph extends AbstractGraph {
 			x = ((graphSize - w) * 0.5f);
 			y = b;
 
-			g2.drawString(t1, x, y);
-			debug(g2, x, y - height, w, height);
+			// g2.drawString(t1, x, y);
+			drawBigTextTop(g2, t1);
 
 			final String t2 = string(1);
 			w = fontMetrics.stringWidth(t2);
@@ -65,9 +60,6 @@ public class TextGraph extends AbstractGraph {
 			y = b + height;
 
 			g2.drawString(t2, x, y);
-			debug(g2, x, y - height, w, height);
-
-			debug(g2, 3, 3, graphSize - 6, graphSize - 6);
 
 		} else if (mode == Mode.ONE_BIG_TWO_SMALL) {
 			// paintString(g2, graphSize, bigFont, string(0), null, null, 0);
@@ -83,10 +75,17 @@ public class TextGraph extends AbstractGraph {
 			final float x = ((graphSize - stringWidth) * 0.5f);
 			final float y = (graphSize * 0.25f) + fontMetrics.getMaxAscent() * 0.5f;
 
-			g2.drawString(t, x, y);
+			// g2.drawString(t, x, y);
+			drawBigTextTop(g2, t);
 
-			paintString(g2, smallFont, string(1), null, null, 1);
-			paintString(g2, smallFont, string(2), null, null, 2);
+			// paintString(g2, smallFont, string(1), null, null, 1);
+			drawSmallTextBottom(g2, 0, false, string(1));
+
+			// paintString(g2, smallFont, string(2), null, null, 2);
+			drawSmallTextBottom(g2, 1, false, string(2));
+
+			drawSmallTextBottom(g2, 2, false, string(3));
+
 		} else {
 			throw new IllegalStateException("[mode] unknown: " + mode);
 		}
@@ -98,19 +97,9 @@ public class TextGraph extends AbstractGraph {
 		return image;
 	}
 
-	private void debug(final Graphics2D g2, final float x, final float y, final float width, final float height) {
-		final boolean debugOn = false;
-		if (debugOn) {
-			final Color color = g2.getColor();
-			g2.setColor(Color.YELLOW);
-			g2.draw(new Rectangle2D.Float(x, y, width, height));
-			g2.setColor(color);
-		}
-	}
-
 	private String string(final int index) {
-		final String x = (null == values || index >= values.length ? UNKNOWN : values[index]);
-		return (null == x ? UNKNOWN : x).trim();
+		final String x = (null == values || index >= values.length ? GraphConstants.UNKNOWN : values[index]);
+		return (null == x ? GraphConstants.UNKNOWN : x).trim();
 	}
 
 	/**

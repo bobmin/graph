@@ -13,6 +13,9 @@ public class HeatmapGraph extends AbstractGraph {
 	/** die maximalen Rechtecke in der Höhe */
 	private final int yCount;
 
+	/** die Werte werden angezeigt */
+	private String[] values = null;
+
 	/**
 	 * Instanziiert die Grafik für die Anzahl in der Breite und Höhe.
 	 * 
@@ -61,11 +64,30 @@ public class HeatmapGraph extends AbstractGraph {
 			}
 		}
 
+		for (int idx = 0; idx < 3; idx++) {
+			drawSmallTextBottom(g2, idx, false, string(idx));
+		}
+
 		paintDebug(g2);
 
 		g2.dispose();
 
 		return image;
+	}
+
+	private String string(final int index) {
+		final String x = (null == values || index >= values.length ? GraphConstants.UNKNOWN : values[index]);
+		return (null == x ? GraphConstants.UNKNOWN : x).trim();
+	}
+
+	/**
+	 * Setzt die Werte zur Anzeige.
+	 * 
+	 * @param values
+	 *            die Werte
+	 */
+	public void setValues(final String[] values) {
+		this.values = values;
 	}
 
 }

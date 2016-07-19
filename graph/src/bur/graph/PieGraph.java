@@ -88,11 +88,14 @@ public class PieGraph extends AbstractGraph {
 			if (null == unit) {
 				paintString(g2, bigFont, vauleString, null, null, 0);
 			} else {
-				paintString(g2, bigFont, vauleString, smallFont, unit, 0);
+				// paintString(g2, bigFont, vauleString, smallFont, unit, 0);
+				drawBigTextMiddle(g2, vauleString, unit);
 			}
 			g2.setColor(GraphConstants.getTextColor());
 			if (null != text) {
-				paintString(g2, smallFont, text, null, null, 1);
+				// paintString(g2, smallFont, text, null, null, 1);
+				drawSmallTextBottom(g2, 0, false, text);
+				drawSmallTextBottom(g2, 1, false, text);
 			}
 			break;
 		default:

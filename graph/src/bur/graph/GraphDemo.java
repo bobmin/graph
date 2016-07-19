@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -148,18 +149,20 @@ public class GraphDemo extends JFrame implements ActionListener {
 			barGraph[idx].setHighlighter(currentHighlighter);
 			barGraph[idx].repaint();
 			// die Texte
-			final String[] values = new String[3];
-			values[0] = texte[new Random().nextInt(texte.length - 1)];
+			final String[] values = new String[4];
+			values[0] = String.valueOf(new Random().nextInt(1500));
 			values[1] = texte[new Random().nextInt(texte.length - 1)];
 			values[2] = texte[new Random().nextInt(texte.length - 1)];
+			values[3] = texte[new Random().nextInt(texte.length - 1)];
 			textGraph[idx].setValues(values);
-			if (5 > new Random().nextInt(10)) {
+			if (idx % 2 == 0) {
 				textGraph[idx].setMode(TextGraph.Mode.ONE_BIG_TWO_SMALL);
 			} else {
 				textGraph[idx].setMode(TextGraph.Mode.TWO_BIG);
 			}
 			textGraph[idx].repaint();
 			// die Heatmap
+			heatmapGraph[idx].setValues(Arrays.copyOfRange(values, 1, 3));
 			heatmapGraph[idx].repaint();
 		}
 		currentHighlighter++;

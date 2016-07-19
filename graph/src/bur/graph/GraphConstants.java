@@ -12,6 +12,9 @@ public class GraphConstants {
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(GraphConstants.class.getName());
 
+	/** Konstante für fehlenden Text */
+	public static final String UNKNOWN = "???";
+
 	// Background, Text, Blau, Grün, Gelb, Rot
 	private static final String[][] THEMES = new String[][] {
 			{ "141f2e", "c0c0c0", "375780", "80ff80", "ffcc33", "f05050" },

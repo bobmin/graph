@@ -70,6 +70,10 @@ public class BarGraph extends AbstractGraph {
 			g2.drawString(title, (int) ((graphSize - fontMetrics.stringWidth(title)) * 0.5d), tx1);
 		}
 
+		// if (null != axisText) {
+		// drawSmallTextBottom(g2, 0, axisText);
+		// }
+
 		// Balken zeichnen
 		for (int idx = 0; idx < SIZE; idx++) {
 			final double x1 = margin + stroke * 0.5d + (idx * stroke * 2);

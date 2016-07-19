@@ -29,6 +29,10 @@ public abstract class AbstractGraph extends JComponent {
 	/** die Standardgröße der Komponente */
 	private static final Dimension SIZE = new Dimension(100, 100);
 
+	private static final double FACTOR_SMALL_ASCENT = 0.72;
+	private static final double FACTOR_SMALL_SPACE = 0.388;
+	private static final double FACTOR_SMALL_ANKER = 0.565;
+
 	Font bigFont = null;
 
 	Font smallFont = null;
@@ -158,22 +162,82 @@ public abstract class AbstractGraph extends JComponent {
 		g2.setFont(bigFont);
 		final FontMetrics bigFontMetrics = g2.getFontMetrics();
 
-		// final LineMetrics lm = bigFontMetrics.getLineMetrics("a", g2);
-		// final double bigFontHeight = lm.getAscent();
-
-		final int bigFontHeight = bigFontMetrics.getAscent();
+		final double bigFontHeight = bigFontMetrics.getAscent() * 0.72;
 
 		final double quarter = graphSize * 0.25;
-		final double halfheight = bigFontHeight / 2;
+		final double halfheight = bigFontHeight * 0.5;
 
 		g2.drawLine(0, (int) (quarter - halfheight), graphSize, (int) (quarter - halfheight));
 		g2.drawLine(0, (int) (quarter + halfheight), graphSize, (int) (quarter + halfheight));
 		// ...drei kleine Zeilen
+		final double smallAnker = graphSize * FACTOR_SMALL_ANKER;
 		g2.setFont(smallFont);
 		final FontMetrics smallFontMetrics = g2.getFontMetrics();
+
 		for (int i = 0; i < 3; i++) {
-			final int tx = (int) (graphSize - margin - (smallFontMetrics.getHeight() * i));
-			g2.drawLine(0, tx, graphSize, tx);
+
+			final double smallFontHeight = smallFontMetrics.getAscent() * FACTOR_SMALL_ASCENT;
+			final double smallHalfheight = smallFontHeight * 0.5;
+			final double smallFontSpace = smallFontMetrics.getAscent() * FACTOR_SMALL_SPACE;
+
+			final double offset = smallAnker + (smallFontHeight * i) + (smallFontSpace * i);
+
+			g2.drawLine(0, (int) (offset - smallHalfheight), graphSize, (int) (offset - smallHalfheight));
+			g2.drawLine(0, (int) (offset + smallHalfheight), graphSize, (int) (offset + smallHalfheight));
+		}
+	}
+
+	protected void drawSmallTextBottom(final Graphics2D g2, final int lineIndex, boolean stretch,
+			final String... value) {
+		final double yAnker = graphSize * FACTOR_SMALL_ANKER;
+		final double xAnker = graphSize * 0.5;
+
+		g2.setFont(smallFont);
+		final FontMetrics fm = g2.getFontMetrics();
+
+		final double smallFontHeight = fm.getAscent() * FACTOR_SMALL_ASCENT;
+		final double halfheight = smallFontHeight * 0.5;
+		final double smallFontSpace = fm.getAscent() * FACTOR_SMALL_SPACE;
+
+		final double offset = yAnker + (smallFontHeight * lineIndex) + (smallFontSpace * lineIndex);
+
+		int smallValueWidth = 0;
+		for (int idx = 0; idx < value.length; idx++) {
+			smallValueWidth += fm.stringWidth(value[idx]);
+		}
+		final double smallHalfwidth = smallValueWidth * 0.5;
+
+		for (int idx = 0; idx < value.length; idx++) {
+			g2.drawString(value[idx], (float) (xAnker - smallHalfwidth), (float) (offset + halfheight));
+		}
+
+	}
+
+	protected void drawBigTextTop(final Graphics2D g2, final String value) {
+		drawBigText(g2, value, null, 0.25);
+	}
+
+	protected void drawBigTextMiddle(final Graphics2D g2, final String value, String unit) {
+		drawBigText(g2, value, unit, 0.355);
+	}
+
+	private void drawBigText(final Graphics2D g2, final String value, final String unit, double factor) {
+		final double anker = graphSize * factor;
+
+		g2.setFont(bigFont);
+		final FontMetrics bigFontMetrics = g2.getFontMetrics();
+
+		final double bigFontHeight = bigFontMetrics.getAscent() * 0.72;
+		final double halfheight = bigFontHeight * 0.5;
+
+		final int valueWidth = bigFontMetrics.stringWidth(value);
+		final double halfwidth = valueWidth * 0.5;
+
+		g2.drawString(value, (int) (graphSize * 0.5 - halfwidth), (int) (anker + halfheight));
+
+		if (null != unit) {
+			g2.setFont(smallFont);
+			g2.drawString(unit, (int) ((graphSize * 0.5 + halfwidth) * 1.01), (int) (anker + halfheight));
 		}
 	}
 
