@@ -6,6 +6,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +30,7 @@ public class PieGraph extends AbstractGraph {
 	private String unit = null;
 
 	/** der Zusatztext */
-	private String text = null;
+	private String[] text = null;
 
 	private int red = 49;
 
@@ -81,7 +82,7 @@ public class PieGraph extends AbstractGraph {
 				paintString(g2, smallFont, unit, null, null, 1);
 			}
 			if (null != text) {
-				paintString(g2, smallFont, text, null, null, 2);
+				paintString(g2, smallFont, text[0], null, null, 2);
 			}
 			break;
 		case UNIT_AND_ONE_TEXTLINE:
@@ -94,8 +95,8 @@ public class PieGraph extends AbstractGraph {
 			g2.setColor(GraphConstants.getTextColor());
 			if (null != text) {
 				// paintString(g2, smallFont, text, null, null, 1);
-				drawSmallTextBottom(g2, 0, false, text);
-				drawSmallTextBottom(g2, 1, false, text);
+				drawSmallTextBottom(g2, 0, false, text[0]);
+				drawSmallTextBottom(g2, 1, false, text[1]);
 			}
 			break;
 		default:
@@ -156,9 +157,9 @@ public class PieGraph extends AbstractGraph {
 	 * @param x
 	 *            der Zusatztext
 	 */
-	public void setText(final String x) {
+	public void setText(final String[] x) {
 		this.text = x;
-		LOG.fine("text assigned: " + x);
+		LOG.fine("text assigned: " + Arrays.toString(x));
 	}
 
 	/**

@@ -129,11 +129,16 @@ public class GraphDemo extends JFrame implements ActionListener {
 		final String[] texte = new String[] { "Dateien", "abgerechnet", "abger", "fertig", "Mbit/s", "autom" };
 		final String[] axisText = new String[] { "12", "1", "2", "3", "4", "5" };
 		for (int idx = 0; idx < pieGraph.length; idx++) {
+			final String[] values = new String[4];
+			values[0] = String.valueOf(new Random().nextInt(1500));
+			values[1] = texte[new Random().nextInt(texte.length - 1)];
+			values[2] = texte[new Random().nextInt(texte.length - 1)];
+			values[3] = texte[new Random().nextInt(texte.length - 1)];
 			// die Donut-Grafiken
 			pieGraph[idx].setMode(PieGraph.Mode.UNIT_AND_ONE_TEXTLINE);
 			pieGraph[idx].setValue(new Random().nextInt(100));
 			pieGraph[idx].setUnit("%");
-			pieGraph[idx].setText(texte[new Random().nextInt(texte.length - 1)]);
+			pieGraph[idx].setText(Arrays.copyOfRange(values, 1, 3));
 			pieGraph[idx].repaint();
 			// die Balken-Grafiken
 			final double[] blueValues = new double[6];
@@ -149,11 +154,6 @@ public class GraphDemo extends JFrame implements ActionListener {
 			barGraph[idx].setHighlighter(currentHighlighter);
 			barGraph[idx].repaint();
 			// die Texte
-			final String[] values = new String[4];
-			values[0] = String.valueOf(new Random().nextInt(1500));
-			values[1] = texte[new Random().nextInt(texte.length - 1)];
-			values[2] = texte[new Random().nextInt(texte.length - 1)];
-			values[3] = texte[new Random().nextInt(texte.length - 1)];
 			textGraph[idx].setValues(values);
 			if (idx % 2 == 0) {
 				textGraph[idx].setMode(TextGraph.Mode.ONE_BIG_TWO_SMALL);
