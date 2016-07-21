@@ -1,9 +1,8 @@
 package bur.graph;
 
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 
 public class HeatmapGraph extends AbstractGraph {
 
@@ -15,6 +14,18 @@ public class HeatmapGraph extends AbstractGraph {
 
 	/** die Werte werden angezeigt */
 	private String[] values = null;
+
+	/**
+	 * der Index wird ggf. hervorgehoben; eine Ganzzahl zwischen 0 bis
+	 * {@value #SIZE}
+	 */
+	private Integer xHighlighter = null;
+
+	/**
+	 * der Index wird ggf. hervorgehoben; eine Ganzzahl zwischen 0 bis
+	 * {@value #SIZE}
+	 */
+	private Integer yHighlighter = null;
 
 	/**
 	 * Instanziiert die Grafik für die Anzahl in der Breite und Höhe.
@@ -30,18 +41,13 @@ public class HeatmapGraph extends AbstractGraph {
 	}
 
 	@Override
-	public BufferedImage createGraph() {
+	public void createGraph(final Graphics2D g2) {
 
 		final double top = margin;
 		final double bottom = (graphSize * 0.5d);
 
 		double width = graphSize - (2 * margin);
 		double height = bottom - top;
-
-		final BufferedImage image = createEmptyImage();
-
-		final Graphics2D g2 = (Graphics2D) image.getGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setPaint(GraphConstants.getTextColor());
 
@@ -60,24 +66,19 @@ public class HeatmapGraph extends AbstractGraph {
 				double y = yStart + (h * yIdx);
 				double wBorder = w * border;
 				double hBorder = h * border;
-				g2.fill(new Rectangle2D.Double(x + wBorder, y + hBorder, (w - 2 * wBorder), (h - 2 * hBorder)));
+				if (null != xHighlighter && null != yHighlighter && xIdx == xHighlighter.intValue()
+						&& yIdx == yHighlighter) {
+					g2.fill(new Ellipse2D.Double(x + wBorder, y + hBorder, (w - 2 * wBorder), (h - 2 * hBorder)));
+				} else {
+					g2.fill(new Rectangle2D.Double(x + wBorder, y + hBorder, (w - 2 * wBorder), (h - 2 * hBorder)));
+				}
 			}
 		}
 
 		for (int idx = 0; idx < 3; idx++) {
-			drawSmallTextBottom(g2, idx, false, string(idx));
+			drawSmallTextBottom(g2, idx, false, string(values, idx));
 		}
 
-		paintDebug(g2);
-
-		g2.dispose();
-
-		return image;
-	}
-
-	private String string(final int index) {
-		final String x = (null == values || index >= values.length ? GraphConstants.UNKNOWN : values[index]);
-		return (null == x ? GraphConstants.UNKNOWN : x).trim();
 	}
 
 	/**
@@ -88,6 +89,11 @@ public class HeatmapGraph extends AbstractGraph {
 	 */
 	public void setValues(final String[] values) {
 		this.values = values;
+	}
+
+	public void setHighlighter(int x, int y) {
+		this.xHighlighter = Integer.valueOf(x);
+		this.yHighlighter = Integer.valueOf(y);
 	}
 
 }

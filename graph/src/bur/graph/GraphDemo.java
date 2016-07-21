@@ -128,6 +128,8 @@ public class GraphDemo extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		final String[] texte = new String[] { "Dateien", "abgerechnet", "abger", "fertig", "Mbit/s", "autom" };
 		final String[] axisText = new String[] { "12", "1", "2", "3", "4", "5" };
+		final int hx = new Random().nextInt(8);
+		final int hy = new Random().nextInt(4);
 		for (int idx = 0; idx < pieGraph.length; idx++) {
 			final String[] values = new String[4];
 			values[0] = String.valueOf(new Random().nextInt(1500));
@@ -135,7 +137,11 @@ public class GraphDemo extends JFrame implements ActionListener {
 			values[2] = texte[new Random().nextInt(texte.length - 1)];
 			values[3] = texte[new Random().nextInt(texte.length - 1)];
 			// die Donut-Grafiken
-			pieGraph[idx].setMode(PieGraph.Mode.UNIT_AND_ONE_TEXTLINE);
+			if (idx % 2 == 0) {
+				pieGraph[idx].setMode(PieGraph.Mode.UNIT_AND_ONE_TEXTLINE);
+			} else {
+				pieGraph[idx].setMode(PieGraph.Mode.TWO_TEXTLINES);
+			}
 			pieGraph[idx].setValue(new Random().nextInt(100));
 			pieGraph[idx].setUnit("%");
 			pieGraph[idx].setText(Arrays.copyOfRange(values, 1, 3));
@@ -163,6 +169,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 			textGraph[idx].repaint();
 			// die Heatmap
 			heatmapGraph[idx].setValues(Arrays.copyOfRange(values, 1, 3));
+			heatmapGraph[idx].setHighlighter(hx, hy);
 			heatmapGraph[idx].repaint();
 		}
 		currentHighlighter++;

@@ -9,7 +9,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,16 +28,25 @@ public abstract class AbstractGraph extends JComponent {
 	/** die Standardgröße der Komponente */
 	private static final Dimension SIZE = new Dimension(100, 100);
 
+	/** der Faktor für die kleine Schriftgröße */
 	private static final double FACTOR_SMALL_ASCENT = 0.72;
+
+	/** der Faktor für den Abstand der kleinen Schriftzeilen */
 	private static final double FACTOR_SMALL_SPACE = 0.388;
+
+	/** der Faktor für den Ankerpunkt zu den kleinen Schriftzeilen */
 	private static final double FACTOR_SMALL_ANKER = 0.565;
 
+	/** die große Schrift wird beim Zeichnen berechnet */
 	Font bigFont = null;
 
+	/** die kleine Schrift wird beim Zeichnen berechnet */
 	Font smallFont = null;
 
+	/** die Grafikhöhe und -breite wird beim Zeichnen berechnet */
 	int graphSize = 0;
 
+	/** der Rand wird beim Zeichnen berechnet */
 	double margin = 0.0;
 
 	/** die Hilfslinieneinstellung: <code>true</code> zeichnet Linien */
@@ -76,49 +84,40 @@ public abstract class AbstractGraph extends JComponent {
 		bigFont = GraphConstants.ROBOTO_BOLD.deriveFont((float) fontSize);
 		smallFont = GraphConstants.ROBOTO_REGULAR.deriveFont((float) (fontSize * 0.35));
 
-		final BufferedImage image = createGraph();
+		// final BufferedImage image = new BufferedImage(graphSize, graphSize,
+		// BufferedImage.TYPE_INT_RGB);
+		// final Graphics2D g2 = (Graphics2D) image.getGraphics();
+		g2.setColor(GraphConstants.getBackgroundColor());
+		g2.fillRect(0, 0, graphSize, graphSize);
+		// g2.dispose();
 
-		g2.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+		// final BufferedImage image = createGraph();
+		// g2.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+		createGraph(g2);
+
+		if (debugging) {
+			paintDebug(g2);
+		}
 
 	}
 
-	abstract public BufferedImage createGraph();
+	abstract public void createGraph(final Graphics2D g2);
 
 	// ----------------------------
 
-	BufferedImage createEmptyImage() {
-		final BufferedImage image = new BufferedImage(graphSize, graphSize, BufferedImage.TYPE_INT_RGB);
-		final Graphics2D g2 = (Graphics2D) image.getGraphics();
-		g2.setColor(GraphConstants.getBackgroundColor());
-		g2.fillRect(0, 0, graphSize, graphSize);
-		g2.dispose();
-		return image;
-	}
-
-	void paintString(final Graphics2D g2, final Font font, final String text, final Font fontTwo, final String textTwo,
-			float offset) {
-		g2.setFont(font);
-
-		final FontMetrics fontMetrics = g2.getFontMetrics();
-		final int stringWidth = fontMetrics.stringWidth(text);
-		final int height = fontMetrics.getHeight();
-
-		final float x = ((graphSize - stringWidth) * 0.5f);
-		final float y = (graphSize * 0.5f + (height * offset));
-
-		g2.drawString(text, x, y);
-
-		// zweiter Text (Standard: rechts daneben, nicht mittig)
-		if (null != textTwo) {
-			if (null != fontTwo) {
-				g2.setFont(fontTwo);
-			}
-			final FontMetrics fontMetricsTwo = g2.getFontMetrics();
-			final int stringWidthTwo = fontMetricsTwo.stringWidth(text);
-			// g2.setColor(g2.getColor().darker());
-			g2.drawString(textTwo, x + stringWidth + 1, y);
-		}
-
+	/**
+	 * Liefert die durch Index festgelegte Zeichenkette. Ist das Array oder der
+	 * Index nicht abrufbar, wird {@link GraphConstants#UNKNOWN} geliefert.
+	 * 
+	 * @param values
+	 *            das Array
+	 * @param index
+	 *            der Index
+	 * @return eine Zeichenkette, niemals <code>null</code>
+	 */
+	String string(final String[] values, final int index) {
+		final String x = (null == values || index >= values.length ? GraphConstants.UNKNOWN : values[index]);
+		return (null == x ? GraphConstants.UNKNOWN : x).trim();
 	}
 
 	/**
@@ -126,15 +125,6 @@ public abstract class AbstractGraph extends JComponent {
 	 */
 	public void setDebug(final boolean value) {
 		debugging = value;
-	}
-
-	/**
-	 * Liefert <code>true</code> wenn Hilfslinien gezeichnet werden sollen.
-	 * 
-	 * @return <code>true</code> die Hilfslinien sollen gezeichnet werden
-	 */
-	public boolean isDebugging() {
-		return debugging;
 	}
 
 	/**
@@ -146,9 +136,6 @@ public abstract class AbstractGraph extends JComponent {
 	 *            die Grafikgröße
 	 */
 	protected void paintDebug(final Graphics2D g2) {
-		if (!debugging) {
-			return;
-		}
 		// Stift + Farbe
 		g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
 		g2.setColor(GraphConstants.debugColorOne());
@@ -203,12 +190,18 @@ public abstract class AbstractGraph extends JComponent {
 
 		int smallValueWidth = 0;
 		for (int idx = 0; idx < value.length; idx++) {
-			smallValueWidth += fm.stringWidth(value[idx]);
+			final String str = value[idx];
+			if (null != str) {
+				smallValueWidth += fm.stringWidth(str);
+			}
 		}
 		final double smallHalfwidth = smallValueWidth * 0.5;
 
 		for (int idx = 0; idx < value.length; idx++) {
-			g2.drawString(value[idx], (float) (xAnker - smallHalfwidth), (float) (offset + halfheight));
+			final String str = value[idx];
+			if (null != str) {
+				g2.drawString(value[idx], (float) (xAnker - smallHalfwidth), (float) (offset + halfheight));
+			}
 		}
 
 	}

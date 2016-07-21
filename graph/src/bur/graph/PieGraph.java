@@ -2,10 +2,8 @@ package bur.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
-import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -43,14 +41,9 @@ public class PieGraph extends AbstractGraph {
 	}
 
 	@Override
-	public BufferedImage createGraph() {
+	public void createGraph(final Graphics2D g2) {
 
 		final float stokeSize = graphSize * 0.075f;
-
-		final BufferedImage image = createEmptyImage();
-		final Graphics2D g2 = (Graphics2D) image.getGraphics();
-
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		final BasicStroke stroke = new BasicStroke(stokeSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
 		g2.setStroke(stroke);
@@ -76,25 +69,17 @@ public class PieGraph extends AbstractGraph {
 
 		switch (mode) {
 		case TWO_TEXTLINES:
-			paintString(g2, bigFont, vauleString, null, null, 0);
+			drawBigTextMiddle(g2, vauleString, null);
 			g2.setColor(GraphConstants.getTextColor());
-			if (null != unit) {
-				paintString(g2, smallFont, unit, null, null, 1);
-			}
+			drawSmallTextBottom(g2, 0, false, unit);
 			if (null != text) {
-				paintString(g2, smallFont, text[0], null, null, 2);
+				drawSmallTextBottom(g2, 1, false, text[0]);
 			}
 			break;
 		case UNIT_AND_ONE_TEXTLINE:
-			if (null == unit) {
-				paintString(g2, bigFont, vauleString, null, null, 0);
-			} else {
-				// paintString(g2, bigFont, vauleString, smallFont, unit, 0);
-				drawBigTextMiddle(g2, vauleString, unit);
-			}
+			drawBigTextMiddle(g2, vauleString, unit);
 			g2.setColor(GraphConstants.getTextColor());
 			if (null != text) {
-				// paintString(g2, smallFont, text, null, null, 1);
 				drawSmallTextBottom(g2, 0, false, text[0]);
 				drawSmallTextBottom(g2, 1, false, text[1]);
 			}
@@ -102,12 +87,6 @@ public class PieGraph extends AbstractGraph {
 		default:
 			throw new IllegalStateException("[mode] unknown: " + mode);
 		}
-
-		paintDebug(g2);
-
-		g2.dispose();
-
-		return image;
 
 	}
 

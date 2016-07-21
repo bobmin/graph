@@ -4,9 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
-import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -47,17 +45,12 @@ public class BarGraph extends AbstractGraph {
 	private String highlighterFormat = "%.0f/%.0f";
 
 	@Override
-	public BufferedImage createGraph() {
+	public void createGraph(final Graphics2D g2) {
 
 		final double stroke = (graphSize - 2 * margin) / 11;
 
 		final double top = margin;
 		final double bottom = (graphSize * 0.5d) - stroke * 0.5f;
-
-		final BufferedImage image = createEmptyImage();
-
-		final Graphics2D g2 = (Graphics2D) image.getGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setStroke(new BasicStroke((float) stroke, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
 
@@ -142,11 +135,6 @@ public class BarGraph extends AbstractGraph {
 			g2.drawString(highlighterText, (int) ((graphSize - fontMetrics.stringWidth(highlighterText)) * 0.5d), tx0);
 		}
 
-		paintDebug(g2);
-
-		g2.dispose();
-
-		return image;
 	}
 
 	private void drawColorLine(final Graphics2D g2, final Color color, final double x, final double top,
