@@ -144,7 +144,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 			}
 			pieGraph[idx].setValue(new Random().nextInt(100));
 			pieGraph[idx].setUnit("%");
-			pieGraph[idx].setText(Arrays.copyOfRange(values, 1, 3));
+			pieGraph[idx].setTexts(Arrays.copyOfRange(values, 1, 3));
 			pieGraph[idx].repaint();
 			// die Balken-Grafiken
 			final double[] blueValues = new double[6];
@@ -154,13 +154,13 @@ public class GraphDemo extends JFrame implements ActionListener {
 				blueValues[vIdx] = (1000.0d * rand.nextDouble());
 				redValues[vIdx] = (blueValues[vIdx] * 0.6d * rand.nextDouble());
 			}
-			barGraph[idx].setTitle(texte[new Random().nextInt(texte.length - 1)]);
+			barGraph[idx].setTexts(texte[new Random().nextInt(texte.length - 1)]);
 			barGraph[idx].setValues(Mode.RED_IN_BLUE, blueValues, redValues, 0.0);
 			barGraph[idx].setAxisText(axisText);
 			barGraph[idx].setHighlighter(currentHighlighter);
 			barGraph[idx].repaint();
 			// die Texte
-			textGraph[idx].setValues(values);
+			textGraph[idx].setTexts(values);
 			if (idx % 2 == 0) {
 				textGraph[idx].setMode(TextGraph.Mode.ONE_BIG_TWO_SMALL);
 			} else {
@@ -168,7 +168,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 			}
 			textGraph[idx].repaint();
 			// die Heatmap
-			heatmapGraph[idx].setValues(Arrays.copyOfRange(values, 1, 3));
+			heatmapGraph[idx].setTexts(Arrays.copyOfRange(values, 1, 3));
 			heatmapGraph[idx].setHighlighter(hx, hy);
 			heatmapGraph[idx].repaint();
 		}

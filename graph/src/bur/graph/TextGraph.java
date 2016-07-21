@@ -15,9 +15,6 @@ public class TextGraph extends AbstractGraph {
 	/** die Anzeigebetriebsart */
 	private Mode mode = Mode.ONE_BIG_TWO_SMALL;
 
-	/** die Werte werden angezeigt */
-	private String[] values = null;
-
 	@Override
 	public void createGraph(final Graphics2D g2) {
 		g2.setColor(GraphConstants.getTextColor());
@@ -30,7 +27,7 @@ public class TextGraph extends AbstractGraph {
 			g2.setFont(bigFont);
 			final FontMetrics fontMetrics = g2.getFontMetrics();
 
-			final String t1 = string(values, 0);
+			final String t1 = string(0);
 			final LineMetrics lm = fontMetrics.getLineMetrics(t1, g2);
 
 			final float height = lm.getAscent();
@@ -47,7 +44,7 @@ public class TextGraph extends AbstractGraph {
 			// g2.drawString(t1, x, y);
 			drawBigTextTop(g2, t1);
 
-			final String t2 = string(values, 1);
+			final String t2 = string(1);
 			w = fontMetrics.stringWidth(t2);
 			x = ((graphSize - w) * 0.5f);
 			y = b + height;
@@ -59,7 +56,7 @@ public class TextGraph extends AbstractGraph {
 
 			g2.setFont(bigFont);
 
-			final String t = string(values, 0);
+			final String t = string(0);
 
 			final FontMetrics fontMetrics = g2.getFontMetrics();
 			final int stringWidth = fontMetrics.stringWidth(t);
@@ -72,27 +69,17 @@ public class TextGraph extends AbstractGraph {
 			drawBigTextTop(g2, t);
 
 			// paintString(g2, smallFont, string(1), null, null, 1);
-			drawSmallTextBottom(g2, 0, false, string(values, 1));
+			drawSmallTextBottom(g2, 0, false, string(1));
 
 			// paintString(g2, smallFont, string(2), null, null, 2);
-			drawSmallTextBottom(g2, 1, false, string(values, 2));
+			drawSmallTextBottom(g2, 1, false, string(2));
 
-			drawSmallTextBottom(g2, 2, false, string(values, 3));
+			drawSmallTextBottom(g2, 2, false, string(3));
 
 		} else {
 			throw new IllegalStateException("[mode] unknown: " + mode);
 		}
 
-	}
-
-	/**
-	 * Setzt die Werte zur Anzeige.
-	 * 
-	 * @param values
-	 *            die Werte
-	 */
-	public void setValues(final String[] values) {
-		this.values = values;
 	}
 
 	/**

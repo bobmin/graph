@@ -12,9 +12,6 @@ public class HeatmapGraph extends AbstractGraph {
 	/** die maximalen Rechtecke in der Höhe */
 	private final int yCount;
 
-	/** die Werte werden angezeigt */
-	private String[] values = null;
-
 	/**
 	 * der Index wird ggf. hervorgehoben; eine Ganzzahl zwischen 0 bis
 	 * {@value #SIZE}
@@ -76,19 +73,9 @@ public class HeatmapGraph extends AbstractGraph {
 		}
 
 		for (int idx = 0; idx < 3; idx++) {
-			drawSmallTextBottom(g2, idx, false, string(values, idx));
+			drawSmallTextBottom(g2, idx, false, string(idx));
 		}
 
-	}
-
-	/**
-	 * Setzt die Werte zur Anzeige.
-	 * 
-	 * @param values
-	 *            die Werte
-	 */
-	public void setValues(final String[] values) {
-		this.values = values;
 	}
 
 	public void setHighlighter(int x, int y) {

@@ -26,9 +26,6 @@ public class BarGraph extends AbstractGraph {
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(BarGraph.class.getName());
 
-	/** der Titel */
-	private String title = null;
-
 	/** die Balkenwerte */
 	private Data values = null;
 
@@ -120,13 +117,11 @@ public class BarGraph extends AbstractGraph {
 			drawSmallTextBottom(g2, 0, true, axisColor, axisText);
 		}
 
-		if (null != title) {
-			g2.setColor(GraphConstants.getTextColor());
-			final int tx1 = (int) (graphSize - margin - (fontMetrics.getHeight() * 1));
-			// g2.drawString(title, (int) ((graphSize -
-			// fontMetrics.stringWidth(title)) * 0.5d), tx1);
-			drawSmallTextBottom(g2, 1, false, title);
-		}
+		g2.setColor(GraphConstants.getTextColor());
+		final int tx1 = (int) (graphSize - margin - (fontMetrics.getHeight() * 1));
+		// g2.drawString(title, (int) ((graphSize -
+		// fontMetrics.stringWidth(title)) * 0.5d), tx1);
+		drawSmallTextBottom(g2, 1, false, string(0));
 
 		// einen Balken hervorheben
 		if (null != values && null != highlighter) {
@@ -184,16 +179,6 @@ public class BarGraph extends AbstractGraph {
 			g2.drawString(text, (int) (x - (stringWidth * 0.47)), y);
 
 		}
-	}
-
-	/**
-	 * Setzt einen Titel zu den Werten.
-	 * 
-	 * @param title
-	 *            der Titel
-	 */
-	public void setTitle(final String title) {
-		this.title = title;
 	}
 
 	/**

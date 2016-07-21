@@ -59,12 +59,25 @@ public abstract class AbstractGraph extends JComponent {
 	/** die Hilfslinieneinstellung: <code>true</code> zeichnet Linien */
 	private boolean debugging = false;
 
+	/** die Texte */
+	private String[] texts = null;
+
 	/**
 	 * Instanziiert das Objekt.
 	 */
 	public AbstractGraph() {
 		setMinimumSize(SIZE);
 		setPreferredSize(SIZE);
+	}
+
+	/**
+	 * Setzt die Texte.
+	 * 
+	 * @param values
+	 *            die Texte
+	 */
+	public void setTexts(final String... values) {
+		this.texts = values;
 	}
 
 	@Override
@@ -125,6 +138,10 @@ public abstract class AbstractGraph extends JComponent {
 	String string(final String[] values, final int index) {
 		final String x = (null == values || index >= values.length ? GraphConstants.UNKNOWN : values[index]);
 		return (null == x ? GraphConstants.UNKNOWN : x).trim();
+	}
+
+	String string(final int index) {
+		return string(texts, index);
 	}
 
 	/**

@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -26,9 +25,6 @@ public class PieGraph extends AbstractGraph {
 
 	/** die Maßeinheit */
 	private String unit = null;
-
-	/** der Zusatztext */
-	private String[] text = null;
 
 	private int red = 49;
 
@@ -72,17 +68,13 @@ public class PieGraph extends AbstractGraph {
 			drawBigTextMiddle(g2, vauleString, null);
 			g2.setColor(GraphConstants.getTextColor());
 			drawSmallTextBottom(g2, 0, false, unit);
-			if (null != text) {
-				drawSmallTextBottom(g2, 1, false, text[0]);
-			}
+			drawSmallTextBottom(g2, 1, false, string(0));
 			break;
 		case UNIT_AND_ONE_TEXTLINE:
 			drawBigTextMiddle(g2, vauleString, unit);
 			g2.setColor(GraphConstants.getTextColor());
-			if (null != text) {
-				drawSmallTextBottom(g2, 0, false, text[0]);
-				drawSmallTextBottom(g2, 1, false, text[1]);
-			}
+			drawSmallTextBottom(g2, 0, false, string(0));
+			drawSmallTextBottom(g2, 1, false, string(1));
 			break;
 		default:
 			throw new IllegalStateException("[mode] unknown: " + mode);
@@ -127,18 +119,6 @@ public class PieGraph extends AbstractGraph {
 	public void setUnit(final String x) {
 		this.unit = x;
 		LOG.fine("unit assigned: " + x);
-	}
-
-	/**
-	 * Setzt den Zusatztext. Wird <code>null</code> übergeben, wird keine
-	 * Zusatztext angezeigt.
-	 * 
-	 * @param x
-	 *            der Zusatztext
-	 */
-	public void setText(final String[] x) {
-		this.text = x;
-		LOG.fine("text assigned: " + Arrays.toString(x));
 	}
 
 	/**
