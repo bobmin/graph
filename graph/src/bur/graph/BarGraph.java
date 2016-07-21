@@ -57,16 +57,6 @@ public class BarGraph extends AbstractGraph {
 		g2.setFont(smallFont);
 		final FontMetrics fontMetrics = g2.getFontMetrics();
 
-		if (null != title) {
-			g2.setColor(GraphConstants.getTextColor());
-			final int tx1 = (int) (graphSize - margin - (fontMetrics.getHeight() * 1));
-			g2.drawString(title, (int) ((graphSize - fontMetrics.stringWidth(title)) * 0.5d), tx1);
-		}
-
-		// if (null != axisText) {
-		// drawSmallTextBottom(g2, 0, axisText);
-		// }
-
 		// Balken zeichnen
 		for (int idx = 0; idx < SIZE; idx++) {
 			final double x1 = margin + stroke * 0.5d + (idx * stroke * 2);
@@ -74,10 +64,6 @@ public class BarGraph extends AbstractGraph {
 			// Balken-Hintergrund: eine grauen Linie
 			g2.setColor(GraphConstants.getTextColor());
 			g2.draw(new Line2D.Double(x1, top, x1, bottom));
-
-			// optionale Beschriftung
-			final int tx2 = (int) (graphSize - margin - (fontMetrics.getHeight() * 2));
-			drawAxisText(g2, idx, x1, tx2);
 
 			if (null != values) {
 
@@ -125,14 +111,40 @@ public class BarGraph extends AbstractGraph {
 
 		}
 
+		if (null != axisText) {
+			final Color[] axisColor = new Color[axisText.length];
+			Arrays.fill(axisColor, GraphConstants.getTextColor());
+			if (null != highlighter) {
+				axisColor[highlighter.intValue()] = GraphConstants.getBlueColor();
+			}
+			drawSmallTextBottom(g2, 0, true, axisColor, axisText);
+		}
+
+		if (null != title) {
+			g2.setColor(GraphConstants.getTextColor());
+			final int tx1 = (int) (graphSize - margin - (fontMetrics.getHeight() * 1));
+			// g2.drawString(title, (int) ((graphSize -
+			// fontMetrics.stringWidth(title)) * 0.5d), tx1);
+			drawSmallTextBottom(g2, 1, false, title);
+		}
+
 		// einen Balken hervorheben
 		if (null != values && null != highlighter) {
 			final int idx = highlighter.intValue();
-			final String highlighterText;
-			highlighterText = String.format(highlighterFormat, values.origRedValues[idx], values.origBlueValues[idx]);
-			g2.setColor(GraphConstants.getTextColor());
-			final int tx0 = (int) (graphSize - margin - (fontMetrics.getHeight() * 0));
-			g2.drawString(highlighterText, (int) ((graphSize - fontMetrics.stringWidth(highlighterText)) * 0.5d), tx0);
+
+			final Color[] highlighterColor = new Color[3];
+			final String[] highlighterText = new String[3];
+
+			highlighterColor[0] = GraphConstants.getRedColor();
+			highlighterText[0] = String.format("%.0f", values.origRedValues[idx]);
+
+			highlighterColor[1] = GraphConstants.getTextColor();
+			highlighterText[1] = " / ";
+
+			highlighterColor[2] = GraphConstants.getBlueColor();
+			highlighterText[2] = String.format("%.0f", values.origBlueValues[idx]);
+
+			drawSmallTextBottom(g2, 2, false, highlighterColor, highlighterText);
 		}
 
 	}
@@ -169,7 +181,7 @@ public class BarGraph extends AbstractGraph {
 
 			final int stringWidth = fm.stringWidth(text);
 
-			g2.drawString(text, (int) (x - (stringWidth * 0.47d)), y);
+			g2.drawString(text, (int) (x - (stringWidth * 0.47)), y);
 
 		}
 	}

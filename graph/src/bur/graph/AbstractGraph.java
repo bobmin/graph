@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,12 @@ public abstract class AbstractGraph extends JComponent {
 
 	/** der Faktor für den Ankerpunkt zu den kleinen Schriftzeilen */
 	private static final double FACTOR_SMALL_ANKER = 0.565;
+
+	/** der Faktor für den oberen Ankerpunkt der großen Schriftzeile */
+	private static final double FACTOR_BIG_TOP_ANKER = 0.25;
+
+	/** der Faktor für den unteren Ankerpunkt der großen Schriftzeile */
+	private static final double FACTOR_BIG_MIDDLE_ANKER = 0.355;
 
 	/** die große Schrift wird beim Zeichnen berechnet */
 	Font bigFont = null;
@@ -174,10 +181,48 @@ public abstract class AbstractGraph extends JComponent {
 		}
 	}
 
+	/**
+	 * Schreibt {@code value} als kleine Textzeile in die untere Grafikhälfte.
+	 * Die Schriftfarbe ist {@link GraphConstants#getTextColor()}.
+	 * 
+	 * @param g2
+	 *            die Grafik
+	 * @param lineIndex
+	 *            der Linienindex
+	 * @param stretch
+	 *            die Verteilung
+	 * @param value
+	 *            der kleine Text
+	 */
 	protected void drawSmallTextBottom(final Graphics2D g2, final int lineIndex, boolean stretch,
 			final String... value) {
+		final Color[] color = createTextColorArray(value.length);
+		drawSmallTextBottom(g2, lineIndex, stretch, color, value);
+	}
+
+	protected Color[] createTextColorArray(final int size) {
+		final Color[] x = new Color[size];
+		Arrays.fill(x, GraphConstants.getTextColor());
+		return x;
+	}
+
+	/**
+	 * Schreibt {@code value} als kleine Textzeile in die untere Grafikhälfte.
+	 * 
+	 * @param g2
+	 *            die Grafik
+	 * @param lineIndex
+	 *            der Linienindex
+	 * @param stretch
+	 *            die Verteilung
+	 * @param color
+	 *            die Textfarbe
+	 * @param value
+	 *            der kleine Text
+	 */
+	protected void drawSmallTextBottom(final Graphics2D g2, final int lineIndex, boolean stretch, final Color[] color,
+			final String... value) {
 		final double yAnker = graphSize * FACTOR_SMALL_ANKER;
-		final double xAnker = graphSize * 0.5;
 
 		g2.setFont(smallFont);
 		final FontMetrics fm = g2.getFontMetrics();
@@ -186,8 +231,51 @@ public abstract class AbstractGraph extends JComponent {
 		final double halfheight = smallFontHeight * 0.5;
 		final double smallFontSpace = fm.getAscent() * FACTOR_SMALL_SPACE;
 
-		final double offset = yAnker + (smallFontHeight * lineIndex) + (smallFontSpace * lineIndex);
+		final float yOffset = (float) (yAnker + (smallFontHeight * lineIndex) + (smallFontSpace * lineIndex)
+				+ halfheight);
 
+		if (stretch) {
+			drawSmallStretchText(g2, fm, color, value, yOffset);
+		} else {
+			drawSmallOneText(g2, fm, color, value, yOffset);
+		}
+
+	}
+
+	private void drawSmallStretchText(final Graphics2D g2, final FontMetrics fm, final Color[] color,
+			final String[] value, final float y) {
+
+		final double width = graphSize - (2 * margin);
+
+		final double xWidth = width / ((value.length * 2) - 1);
+
+		for (int idx = 0; idx < value.length; idx++) {
+			final String str = value[idx];
+			if (null != str) {
+				final double smallHalfwidth = fm.stringWidth(str) * 0.5;
+				final double xAnker = margin + (idx * (2 * xWidth)) + (xWidth * 0.5);
+				g2.setColor(color[idx]);
+				g2.drawString(value[idx], (float) (xAnker - smallHalfwidth), y);
+			}
+		}
+
+	}
+
+	/**
+	 * Schreibt {@code value} als einen kleinen Text mittig ausgerichtet in die
+	 * Zeile.
+	 * 
+	 * @param g2
+	 *            die Grafik
+	 * @param fm
+	 *            die Schriftmaße
+	 * @param value
+	 *            die Textbausteine
+	 * @param y
+	 *            die Y-Position der Zeile
+	 */
+	private void drawSmallOneText(final Graphics2D g2, final FontMetrics fm, final Color[] color, final String[] value,
+			final float y) {
 		int smallValueWidth = 0;
 		for (int idx = 0; idx < value.length; idx++) {
 			final String str = value[idx];
@@ -197,21 +285,44 @@ public abstract class AbstractGraph extends JComponent {
 		}
 		final double smallHalfwidth = smallValueWidth * 0.5;
 
+		final double xAnker = graphSize * 0.5;
+
+		double xOffset = 0.0;
 		for (int idx = 0; idx < value.length; idx++) {
 			final String str = value[idx];
 			if (null != str) {
-				g2.drawString(value[idx], (float) (xAnker - smallHalfwidth), (float) (offset + halfheight));
+				g2.setColor(color[idx]);
+				g2.drawString(value[idx], (float) (xAnker - smallHalfwidth + xOffset), y);
+				xOffset += fm.stringWidth(str);
 			}
 		}
-
 	}
 
+	/**
+	 * Schreibt {@code value} als obere große Schriftzeile.
+	 * 
+	 * @param g2
+	 *            die Grafik
+	 * @param value
+	 *            der große Text
+	 */
 	protected void drawBigTextTop(final Graphics2D g2, final String value) {
-		drawBigText(g2, value, null, 0.25);
+		drawBigText(g2, value, null, FACTOR_BIG_TOP_ANKER);
 	}
 
+	/**
+	 * Schreibt {@code value} und {@code unit} als große Schriftzeile (
+	 * {@code unit} mit kleiner Schrift) auf die Mittellinie.
+	 * 
+	 * @param g2
+	 *            die Grafik
+	 * @param value
+	 *            der große Text
+	 * @param unit
+	 *            der optionale kleine zweite Text
+	 */
 	protected void drawBigTextMiddle(final Graphics2D g2, final String value, String unit) {
-		drawBigText(g2, value, unit, 0.355);
+		drawBigText(g2, value, unit, FACTOR_BIG_MIDDLE_ANKER);
 	}
 
 	private void drawBigText(final Graphics2D g2, final String value, final String unit, double factor) {
