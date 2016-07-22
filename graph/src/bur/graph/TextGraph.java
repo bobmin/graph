@@ -99,4 +99,9 @@ public class TextGraph extends AbstractGraph {
 		ONE_BIG_TWO_SMALL, TWO_BIG
 	}
 
+	@Override
+	public int getLength() {
+		return 1;
+	}
+
 }

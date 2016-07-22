@@ -62,6 +62,9 @@ public abstract class AbstractGraph extends JComponent {
 	/** die Texte */
 	private String[] texts = null;
 
+	/** der Zähler für die Auswahl */
+	int highlighter = 1;
+
 	/**
 	 * Instanziiert das Objekt.
 	 */
@@ -69,6 +72,20 @@ public abstract class AbstractGraph extends JComponent {
 		setMinimumSize(SIZE);
 		setPreferredSize(SIZE);
 	}
+
+	public void highlighterTick() {
+		highlighter++;
+		if (highlighter > getLength()) {
+			highlighter = 1;
+		}
+	}
+
+	/**
+	 * Liefert die Anzahl der Werte.
+	 * 
+	 * @return eine Zahl >= 0
+	 */
+	abstract public int getLength();
 
 	/**
 	 * Setzt die Texte.

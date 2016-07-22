@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class BarGraph extends AbstractGraph {
 
 	/** die Anzahl der Balken */
-	private static final int SIZE = 6;
+	private static final int LENGTH = 6;
 
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(BarGraph.class.getName());
@@ -31,15 +31,6 @@ public class BarGraph extends AbstractGraph {
 
 	/** die Beschriftung für die Y-Achse */
 	private String[] axisText = null;
-
-	/**
-	 * der Index wird ggf. hervorgehoben; eine Ganzzahl zwischen 0 bis
-	 * {@value #SIZE}
-	 */
-	private Integer highlighter = null;
-
-	/** das Format der zweiten Zeile mit den Werten */
-	private String highlighterFormat = "%.0f/%.0f";
 
 	@Override
 	public void createGraph(final Graphics2D g2) {
@@ -55,7 +46,7 @@ public class BarGraph extends AbstractGraph {
 		final FontMetrics fontMetrics = g2.getFontMetrics();
 
 		// Balken zeichnen
-		for (int idx = 0; idx < SIZE; idx++) {
+		for (int idx = 0; idx < LENGTH; idx++) {
 			final double x1 = margin + stroke * 0.5d + (idx * stroke * 2);
 
 			// Balken-Hintergrund: eine grauen Linie
@@ -111,9 +102,7 @@ public class BarGraph extends AbstractGraph {
 		if (null != axisText) {
 			final Color[] axisColor = new Color[axisText.length];
 			Arrays.fill(axisColor, GraphConstants.getTextColor());
-			if (null != highlighter) {
-				axisColor[highlighter.intValue()] = GraphConstants.getBlueColor();
-			}
+			axisColor[highlighter - 1] = GraphConstants.getBlueColor();
 			drawSmallTextBottom(g2, 0, true, axisColor, axisText);
 		}
 
@@ -124,8 +113,8 @@ public class BarGraph extends AbstractGraph {
 		drawSmallTextBottom(g2, 1, false, string(0));
 
 		// einen Balken hervorheben
-		if (null != values && null != highlighter) {
-			final int idx = highlighter.intValue();
+		if (null != values) {
+			final int idx = (highlighter - 1);
 
 			final Color[] highlighterColor = new Color[3];
 			final String[] highlighterText = new String[3];
@@ -150,35 +139,6 @@ public class BarGraph extends AbstractGraph {
 		final double pixel = (bottom - top) * value / 100.0;
 		g2.draw(new Line2D.Double(x, (bottom - pixel), x, bottom));
 		LOG.fine("line plotted, top = " + top + ", bottom = " + bottom + ", value = " + value + ", pixel = " + pixel);
-	}
-
-	/**
-	 * Beschriftet einen Balken.
-	 * 
-	 * @param g2
-	 *            die Grafik
-	 * @param index
-	 *            der Balkenindex
-	 * @param x
-	 *            die X-Position
-	 * @param y
-	 *            die Y-Position
-	 */
-	private void drawAxisText(final Graphics2D g2, final int index, final double x, final int y) {
-		final FontMetrics fm = g2.getFontMetrics();
-		final String text = (null == axisText ? null : axisText[index]);
-		if (null != text) {
-			if (null != highlighter && highlighter.intValue() == index) {
-				g2.setColor(GraphConstants.getBlueColor());
-			} else {
-				g2.setColor(GraphConstants.getTextColor());
-			}
-
-			final int stringWidth = fm.stringWidth(text);
-
-			g2.drawString(text, (int) (x - (stringWidth * 0.47)), y);
-
-		}
 	}
 
 	/**
@@ -222,7 +182,7 @@ public class BarGraph extends AbstractGraph {
 	 * @return ein Objekt, niemals <code>null</code>
 	 */
 	public double[] getNormBlueValues() {
-		return (null == values ? new double[SIZE] : values.normBlueValues);
+		return (null == values ? new double[LENGTH] : values.normBlueValues);
 	}
 
 	/**
@@ -231,24 +191,7 @@ public class BarGraph extends AbstractGraph {
 	 * @return ein Objekt, niemals <code>null</code>
 	 */
 	public double[] getNormRedValues() {
-		return (null == values ? new double[SIZE] : values.normRedValues);
-	}
-
-	public void setHighlighter(int value) {
-		if (1 > value || value > SIZE) {
-			throw new IllegalArgumentException("[0 < x <= SIZE]: " + value);
-		}
-		highlighter = Integer.valueOf(value) - 1;
-	}
-
-	/**
-	 * Setzt das Format der zweiten Zeile vom Highlighter.
-	 * 
-	 * @param value
-	 *            das Format
-	 */
-	public void setHighlighterFormat(String value) {
-		this.highlighterFormat = value;
+		return (null == values ? new double[LENGTH] : values.normRedValues);
 	}
 
 	/**
@@ -294,13 +237,13 @@ public class BarGraph extends AbstractGraph {
 		private Data(final Mode mode, final double[] blueValues, final double[] redValues, final double initMax) {
 			this.mode = mode;
 			// Originalwerte
-			this.origBlueValues = (null == blueValues ? new double[SIZE] : Arrays.copyOf(blueValues, SIZE));
-			this.origRedValues = (null == redValues ? new double[SIZE] : Arrays.copyOf(redValues, SIZE));
+			this.origBlueValues = (null == blueValues ? new double[LENGTH] : Arrays.copyOf(blueValues, LENGTH));
+			this.origRedValues = (null == redValues ? new double[LENGTH] : Arrays.copyOf(redValues, LENGTH));
 			// Normalisierung
-			this.normBlueValues = new double[SIZE];
-			this.normRedValues = new double[SIZE];
+			this.normBlueValues = new double[LENGTH];
+			this.normRedValues = new double[LENGTH];
 			double max = initMax;
-			for (int idx = 0; idx < SIZE; idx++) {
+			for (int idx = 0; idx < LENGTH; idx++) {
 				if (Mode.RED_IN_BLUE == mode) {
 					max = Math.max(origBlueValues[idx] + origRedValues[idx], max);
 				} else if (Mode.RED_AND_BLUE_START_BY_ZERO == mode) {
@@ -313,12 +256,17 @@ public class BarGraph extends AbstractGraph {
 					throw new IllegalStateException("[mode] unknown: " + mode);
 				}
 			}
-			for (int idx = 0; idx < SIZE; idx++) {
+			for (int idx = 0; idx < LENGTH; idx++) {
 				normBlueValues[idx] = origBlueValues[idx] * 100.0d / max;
 				normRedValues[idx] = origRedValues[idx] * 100.0d / max;
 			}
 		}
 
+	}
+
+	@Override
+	public int getLength() {
+		return LENGTH;
 	}
 
 }

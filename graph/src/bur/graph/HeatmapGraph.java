@@ -3,6 +3,8 @@ package bur.graph;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HeatmapGraph extends AbstractGraph {
 
@@ -12,17 +14,14 @@ public class HeatmapGraph extends AbstractGraph {
 	/** die maximalen Rechtecke in der Höhe */
 	private final int yCount;
 
-	/**
-	 * der Index wird ggf. hervorgehoben; eine Ganzzahl zwischen 0 bis
-	 * {@value #SIZE}
-	 */
-	private Integer xHighlighter = null;
+	/** die gelbe Farbgrenze; kleinere Werte werden gelb */
+	private double yellow = 0.0;
 
-	/**
-	 * der Index wird ggf. hervorgehoben; eine Ganzzahl zwischen 0 bis
-	 * {@value #SIZE}
-	 */
-	private Integer yHighlighter = null;
+	/** die rote Farbgrenze; kleinere Werte werden rot */
+	private double red = 0.0;
+
+	/** die Werte mit dem Schlüssel "x:y" */
+	private Map<String, Double> values = new HashMap<>();
 
 	/**
 	 * Instanziiert die Grafik für die Anzahl in der Breite und Höhe.
@@ -46,14 +45,17 @@ public class HeatmapGraph extends AbstractGraph {
 		double width = graphSize - (2 * margin);
 		double height = bottom - top;
 
-		g2.setPaint(GraphConstants.getTextColor());
-
 		double xStart = margin;
 		double yStart = margin;
 		double widthMax = width;
 		double heightMax = height;
 
 		double border = 0.08;
+
+		String highlighterKey = null;
+		if (highlighter <= values.size()) {
+			highlighterKey = values.keySet().toArray(new String[values.size()])[highlighter - 1];
+		}
 
 		for (int xIdx = 0; xIdx < xCount; xIdx++) {
 			for (int yIdx = 0; yIdx < yCount; yIdx++) {
@@ -63,24 +65,73 @@ public class HeatmapGraph extends AbstractGraph {
 				double y = yStart + (h * yIdx);
 				double wBorder = w * border;
 				double hBorder = h * border;
-				if (null != xHighlighter && null != yHighlighter && xIdx == xHighlighter.intValue()
-						&& yIdx == yHighlighter) {
+
+				final String valueKey = String.format("%d:%d", xIdx, yIdx);
+				if (values.containsKey(valueKey)) {
+					final Double value = values.get(valueKey);
+					if (value.doubleValue() < red) {
+						g2.setPaint(GraphConstants.getRedColor());
+					} else if (value.doubleValue() < yellow) {
+						g2.setPaint(GraphConstants.getYellowColor());
+					} else {
+						g2.setPaint(GraphConstants.getBlueColor());
+					}
+				} else {
+					g2.setPaint(GraphConstants.getTextColor());
+				}
+
+				if (valueKey.equals(highlighterKey)) {
 					g2.fill(new Ellipse2D.Double(x + wBorder, y + hBorder, (w - 2 * wBorder), (h - 2 * hBorder)));
+					final double hv = values.get(highlighterKey).doubleValue();
+					drawSmallTextBottom(g2, 2, false, String.format("%.2f", hv));
 				} else {
 					g2.fill(new Rectangle2D.Double(x + wBorder, y + hBorder, (w - 2 * wBorder), (h - 2 * hBorder)));
 				}
 			}
 		}
 
-		for (int idx = 0; idx < 3; idx++) {
-			drawSmallTextBottom(g2, idx, false, string(idx));
-		}
+		drawSmallTextBottom(g2, 0, false, string(0));
+		drawSmallTextBottom(g2, 1, false, string(2));
 
 	}
 
-	public void setHighlighter(int x, int y) {
-		this.xHighlighter = Integer.valueOf(x);
-		this.yHighlighter = Integer.valueOf(y);
+	/**
+	 * Setzt die Werte für den Farbwechsel.
+	 * 
+	 * @param red
+	 *            unter diesem Wert roter Wert
+	 * @param yellow
+	 *            unter diesem Wert gelber Wert
+	 */
+	public void setColorLimits(final double red, final double yellow) {
+		this.red = red;
+		this.yellow = yellow;
+	}
+
+	/**
+	 * Setzt einen Wert für die X- und Y-Koordinate.
+	 * 
+	 * @param x
+	 *            die X-Koordinate >= 1 und maximal {@link HeatmapGraph#xCount}
+	 * @param y
+	 *            die Y-Koordinate >= 1 und maximal {@link HeatmapGraph#yCount}
+	 * @param value
+	 *            der Wert
+	 */
+	public void setValue(final int x, final int y, final double value) {
+		values.put(String.format("%d:%d", (x - 1), (y - 1)), Double.valueOf(value));
+	}
+
+	/**
+	 * Löscht die gespeicherten Werte.
+	 */
+	public void clear() {
+		values.clear();
+	}
+
+	@Override
+	public int getLength() {
+		return values.size();
 	}
 
 }

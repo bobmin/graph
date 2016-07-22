@@ -26,9 +26,11 @@ public class PieGraph extends AbstractGraph {
 	/** die Maßeinheit */
 	private String unit = null;
 
-	private int red = 49;
-
+	/** die gelbe Farbgrenze; kleinere Werte werden gelb */
 	private int yellow = 74;
+
+	/** die rote Farbgrenze; kleinere Werte werden rot */
+	private int red = 49;
 
 	/**
 	 * Instanziiert das Objekt.
@@ -139,6 +141,11 @@ public class PieGraph extends AbstractGraph {
 	 */
 	public static enum Mode {
 		TWO_TEXTLINES, UNIT_AND_ONE_TEXTLINE
+	}
+
+	@Override
+	public int getLength() {
+		return 1;
 	}
 
 }
