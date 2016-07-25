@@ -46,7 +46,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 	/** der Zeitgeber */
 	private Timer timer = null;
 
-	private int MAXTICK = 10;
+	private final int MAXTICK = 10;
 
 	private int tick = MAXTICK;
 
@@ -172,7 +172,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 				for (int vIdx = 0; vIdx < MAXTICK; vIdx++) {
 					final int x = rand.nextInt(9);
 					final int y = rand.nextInt(5);
-					heatmapGraph[idx].setValue(x, y, (1000.0 * rand.nextDouble()));
+					heatmapGraph[idx].setValue(x, y, values[1], (1000.0 * rand.nextDouble()));
 				}
 			}
 			tick = 1;

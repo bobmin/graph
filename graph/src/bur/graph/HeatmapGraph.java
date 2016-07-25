@@ -21,7 +21,7 @@ public class HeatmapGraph extends AbstractGraph {
 	private double red = 0.0;
 
 	/** die Werte mit dem Schlüssel "x:y" */
-	private Map<String, Double> values = new HashMap<>();
+	private final Map<String, HeatmapValue> values = new HashMap<>();
 
 	/**
 	 * Instanziiert die Grafik für die Anzahl in der Breite und Höhe.
@@ -42,15 +42,15 @@ public class HeatmapGraph extends AbstractGraph {
 		final double top = margin;
 		final double bottom = (graphSize * 0.5d);
 
-		double width = graphSize - (2 * margin);
-		double height = bottom - top;
+		final double width = graphSize - (2 * margin);
+		final double height = bottom - top;
 
-		double xStart = margin;
-		double yStart = margin;
-		double widthMax = width;
-		double heightMax = height;
+		final double xStart = margin;
+		final double yStart = margin;
+		final double widthMax = width;
+		final double heightMax = height;
 
-		double border = 0.08;
+		final double border = 0.08;
 
 		String highlighterKey = null;
 		if (highlighter <= values.size()) {
@@ -59,19 +59,19 @@ public class HeatmapGraph extends AbstractGraph {
 
 		for (int xIdx = 0; xIdx < xCount; xIdx++) {
 			for (int yIdx = 0; yIdx < yCount; yIdx++) {
-				double w = widthMax / xCount;
-				double h = heightMax / yCount;
-				double x = xStart + (w * xIdx);
-				double y = yStart + (h * yIdx);
-				double wBorder = w * border;
-				double hBorder = h * border;
+				final double w = widthMax / xCount;
+				final double h = heightMax / yCount;
+				final double x = xStart + (w * xIdx);
+				final double y = yStart + (h * yIdx);
+				final double wBorder = w * border;
+				final double hBorder = h * border;
 
 				final String valueKey = String.format("%d:%d", xIdx, yIdx);
 				if (values.containsKey(valueKey)) {
-					final Double value = values.get(valueKey);
-					if (value.doubleValue() < red) {
+					final double value = values.get(valueKey).value;
+					if (value < red) {
 						g2.setPaint(GraphConstants.getRedColor());
-					} else if (value.doubleValue() < yellow) {
+					} else if (value < yellow) {
 						g2.setPaint(GraphConstants.getYellowColor());
 					} else {
 						g2.setPaint(GraphConstants.getBlueColor());
@@ -82,7 +82,9 @@ public class HeatmapGraph extends AbstractGraph {
 
 				if (valueKey.equals(highlighterKey)) {
 					g2.fill(new Ellipse2D.Double(x + wBorder, y + hBorder, (w - 2 * wBorder), (h - 2 * hBorder)));
-					final double hv = values.get(highlighterKey).doubleValue();
+					final String hl = values.get(highlighterKey).label;
+					drawSmallTextBottom(g2, 1, false, hl);
+					final double hv = values.get(highlighterKey).value;
 					drawSmallTextBottom(g2, 2, false, String.format("%.2f", hv));
 				} else {
 					g2.fill(new Rectangle2D.Double(x + wBorder, y + hBorder, (w - 2 * wBorder), (h - 2 * hBorder)));
@@ -90,8 +92,8 @@ public class HeatmapGraph extends AbstractGraph {
 			}
 		}
 
+		// Titel
 		drawSmallTextBottom(g2, 0, false, string(0));
-		drawSmallTextBottom(g2, 1, false, string(2));
 
 	}
 
@@ -118,8 +120,8 @@ public class HeatmapGraph extends AbstractGraph {
 	 * @param value
 	 *            der Wert
 	 */
-	public void setValue(final int x, final int y, final double value) {
-		values.put(String.format("%d:%d", (x - 1), (y - 1)), Double.valueOf(value));
+	public void setValue(final int x, final int y, final String label, final double value) {
+		values.put(String.format("%d:%d", (x - 1), (y - 1)), new HeatmapValue(label, value));
 	}
 
 	/**
@@ -132,6 +134,32 @@ public class HeatmapGraph extends AbstractGraph {
 	@Override
 	public int getLength() {
 		return values.size();
+	}
+
+	/**
+	 * Ein Wert in der Heatmap.
+	 */
+	private class HeatmapValue {
+
+		/** die Bezeichnung */
+		private final String label;
+
+		/** der Zahlenwert */
+		private final double value;
+
+		/**
+		 * Instaziiert das Objekt.
+		 * 
+		 * @param label
+		 *            die Bezeichnung
+		 * @param value
+		 *            der Zahlenwert
+		 */
+		public HeatmapValue(final String label, final double value) {
+			this.label = label;
+			this.value = value;
+		}
+
 	}
 
 }
