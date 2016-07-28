@@ -6,6 +6,12 @@ import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Zeigt eine Heatmap.
+ * 
+ * @author maik.boettcher@bur-kg.de
+ *
+ */
 public class HeatmapGraph extends AbstractGraph {
 
 	/** die maximalen Rechtecke in der Breite */
@@ -40,9 +46,9 @@ public class HeatmapGraph extends AbstractGraph {
 	public void createGraph(final Graphics2D g2) {
 
 		final double top = margin;
-		final double bottom = (graphSize * 0.5d);
+		final double bottom = (graphHeight * 0.5d);
 
-		final double width = graphSize - (2 * margin);
+		final double width = graphHeight - (2 * margin);
 		final double height = bottom - top;
 
 		final double xStart = margin;

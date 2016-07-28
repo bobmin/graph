@@ -26,8 +26,8 @@ public abstract class AbstractGraph extends JComponent {
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(AbstractGraph.class.getName());
 
-	/** die Standardgröße der Komponente */
-	private static final Dimension SIZE = new Dimension(100, 100);
+	/** die Konfiguraion */
+	private final GraphConfig graphConfig;
 
 	/** der Faktor für die kleine Schriftgröße */
 	private static final double FACTOR_SMALL_ASCENT = 0.72;
@@ -44,14 +44,20 @@ public abstract class AbstractGraph extends JComponent {
 	/** der Faktor für den unteren Ankerpunkt der großen Schriftzeile */
 	private static final double FACTOR_BIG_MIDDLE_ANKER = 0.355;
 
-	/** die große Schrift wird beim Zeichnen berechnet */
-	Font bigFont = null;
+	/** die große fette Schrift wird beim Zeichnen berechnet */
+	Font bigBoldFont = null;
+
+	/** die große fette Schrift wird beim Zeichnen berechnet */
+	Font bigRegularFont = null;
 
 	/** die kleine Schrift wird beim Zeichnen berechnet */
 	Font smallFont = null;
 
-	/** die Grafikhöhe und -breite wird beim Zeichnen berechnet */
-	int graphSize = 0;
+	/** die Grafikhöhe wird beim Zeichnen berechnet */
+	int graphHeight = 0;
+
+	/** die Grafikbreite wird beim Zeichnen berechnet */
+	int graphWidth = 0;
 
 	/** der Rand wird beim Zeichnen berechnet */
 	double margin = 0.0;
@@ -66,11 +72,24 @@ public abstract class AbstractGraph extends JComponent {
 	int highlighter = 1;
 
 	/**
-	 * Instanziiert das Objekt.
+	 * Instanziiert das Objekt mit der Standardkonfiguration.
 	 */
 	public AbstractGraph() {
-		setMinimumSize(SIZE);
-		setPreferredSize(SIZE);
+		this(GraphConfig.FULL);
+	}
+
+	/**
+	 * Instanziiert das Objekt in der gewünschten Konfiguration.
+	 * 
+	 * @param graphConfig
+	 *            die gewünschte Konfiguration
+	 */
+	public AbstractGraph(final GraphConfig graphConfig) {
+		this.graphConfig = graphConfig;
+		final int width = (graphConfig.expand ? Integer.MAX_VALUE : 100);
+		final Dimension size = new Dimension(width, graphConfig.height);
+		setMinimumSize(size);
+		setPreferredSize(size);
 	}
 
 	public void highlighterTick() {
@@ -102,30 +121,35 @@ public abstract class AbstractGraph extends JComponent {
 		final Graphics2D g2 = (Graphics2D) g;
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 		// TODO use Insets
 		// final Insets border = getInsets();
 
-		final int width = getWidth();
 		final int height = getHeight();
+		final int width = getWidth();
 
-		graphSize = Math.min(width, height);
-		margin = graphSize * 0.1d;
+		graphHeight = Math.min(width, height);
+		graphWidth = (graphConfig.expand ? width : graphHeight);
 
-		final double fontSize = graphSize * 0.29;
+		margin = graphHeight * 0.1d;
+
+		final double fontSize = graphHeight * 0.29;
 
 		if (LOG.isLoggable(Level.FINE)) {
-			LOG.fine("graphSize = " + graphSize + "margin = " + margin + ", fontSize = " + fontSize);
+			LOG.fine("graphHeight = " + graphHeight + ", graphWidth = " + graphWidth + ", margin = " + margin
+					+ ", fontSize = " + fontSize);
 		}
 
-		bigFont = GraphConstants.ROBOTO_BOLD.deriveFont((float) fontSize);
+		bigBoldFont = GraphConstants.ROBOTO_BOLD.deriveFont((float) fontSize);
+		bigRegularFont = GraphConstants.ROBOTO_REGULAR.deriveFont((float) fontSize);
 		smallFont = GraphConstants.ROBOTO_REGULAR.deriveFont((float) (fontSize * 0.35));
 
 		// final BufferedImage image = new BufferedImage(graphSize, graphSize,
 		// BufferedImage.TYPE_INT_RGB);
 		// final Graphics2D g2 = (Graphics2D) image.getGraphics();
 		g2.setColor(GraphConstants.getBackgroundColor());
-		g2.fillRect(0, 0, graphSize, graphSize);
+		g2.fillRect(0, 0, graphWidth, graphHeight);
 		// g2.dispose();
 
 		// final BufferedImage image = createGraph();
@@ -152,13 +176,17 @@ public abstract class AbstractGraph extends JComponent {
 	 *            der Index
 	 * @return eine Zeichenkette, niemals <code>null</code>
 	 */
-	String string(final String[] values, final int index) {
+	private String string(final String[] values, final int index) {
 		final String x = (null == values || index >= values.length ? GraphConstants.UNKNOWN : values[index]);
 		return (null == x ? GraphConstants.UNKNOWN : x).trim();
 	}
 
 	String string(final int index) {
 		return string(texts, index);
+	}
+
+	int getTextsLenght() {
+		return (null == texts ? 0 : texts.length);
 	}
 
 	/**
@@ -173,45 +201,48 @@ public abstract class AbstractGraph extends JComponent {
 	 * 
 	 * @param g2
 	 *            die Grafik
-	 * @param graphSize
+	 * @param graphHeight
 	 *            die Grafikgröße
 	 */
 	protected void paintDebug(final Graphics2D g2) {
-		// Stift + Farbe
+		// Stift
 		g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[] { 3f }, 0));
+
+		// Rahmen + Mittellinie
 		g2.setColor(GraphConstants.debugColorOne());
-		// Rahmen
-		g2.draw(new Rectangle2D.Double(1, 1, graphSize - 2, graphSize - 2));
-		// Mittellinie
-		g2.drawLine(0, (int) (graphSize * 0.5f), graphSize, (int) (graphSize * 0.5f));
-		// Texte
-		g2.setColor(Color.green);
-		// ...eine große Zeile
-		g2.setFont(bigFont);
-		final FontMetrics bigFontMetrics = g2.getFontMetrics();
+		g2.draw(new Rectangle2D.Double(1, 1, graphWidth - 2, graphHeight - 2));
+		g2.drawLine(0, (int) (graphHeight * 0.5f), graphWidth, (int) (graphHeight * 0.5f));
 
-		final double bigFontHeight = bigFontMetrics.getAscent() * 0.72;
+		if (!graphConfig.expand) {
+			// Texte
+			g2.setColor(Color.green);
+			// ...eine große Zeile
+			g2.setFont(bigBoldFont);
+			final FontMetrics bigFontMetrics = g2.getFontMetrics();
 
-		final double quarter = graphSize * 0.25;
-		final double halfheight = bigFontHeight * 0.5;
+			final double bigFontHeight = bigFontMetrics.getAscent() * 0.72;
 
-		g2.drawLine(0, (int) (quarter - halfheight), graphSize, (int) (quarter - halfheight));
-		g2.drawLine(0, (int) (quarter + halfheight), graphSize, (int) (quarter + halfheight));
-		// ...drei kleine Zeilen
-		final double smallAnker = graphSize * FACTOR_SMALL_ANKER;
-		g2.setFont(smallFont);
-		final FontMetrics smallFontMetrics = g2.getFontMetrics();
+			final double quarter = graphHeight * 0.25;
+			final double halfheight = bigFontHeight * 0.5;
 
-		for (int i = 0; i < 3; i++) {
+			g2.drawLine(0, (int) (quarter - halfheight), graphHeight, (int) (quarter - halfheight));
+			g2.drawLine(0, (int) (quarter + halfheight), graphHeight, (int) (quarter + halfheight));
+			// ...drei kleine Zeilen
+			final double smallAnker = graphHeight * FACTOR_SMALL_ANKER;
+			g2.setFont(smallFont);
+			final FontMetrics smallFontMetrics = g2.getFontMetrics();
 
-			final double smallFontHeight = smallFontMetrics.getAscent() * FACTOR_SMALL_ASCENT;
-			final double smallHalfheight = smallFontHeight * 0.5;
-			final double smallFontSpace = smallFontMetrics.getAscent() * FACTOR_SMALL_SPACE;
+			for (int i = 0; i < 3; i++) {
 
-			final double offset = smallAnker + (smallFontHeight * i) + (smallFontSpace * i);
+				final double smallFontHeight = smallFontMetrics.getAscent() * FACTOR_SMALL_ASCENT;
+				final double smallHalfheight = smallFontHeight * 0.5;
+				final double smallFontSpace = smallFontMetrics.getAscent() * FACTOR_SMALL_SPACE;
 
-			g2.drawLine(0, (int) (offset - smallHalfheight), graphSize, (int) (offset - smallHalfheight));
-			g2.drawLine(0, (int) (offset + smallHalfheight), graphSize, (int) (offset + smallHalfheight));
+				final double offset = smallAnker + (smallFontHeight * i) + (smallFontSpace * i);
+
+				g2.drawLine(0, (int) (offset - smallHalfheight), graphHeight, (int) (offset - smallHalfheight));
+				g2.drawLine(0, (int) (offset + smallHalfheight), graphHeight, (int) (offset + smallHalfheight));
+			}
 		}
 	}
 
@@ -256,7 +287,7 @@ public abstract class AbstractGraph extends JComponent {
 	 */
 	protected void drawSmallTextBottom(final Graphics2D g2, final int lineIndex, boolean stretch, final Color[] color,
 			final String... value) {
-		final double yAnker = graphSize * FACTOR_SMALL_ANKER;
+		final double yAnker = graphHeight * FACTOR_SMALL_ANKER;
 
 		g2.setFont(smallFont);
 		final FontMetrics fm = g2.getFontMetrics();
@@ -279,7 +310,7 @@ public abstract class AbstractGraph extends JComponent {
 	private void drawSmallStretchText(final Graphics2D g2, final FontMetrics fm, final Color[] color,
 			final String[] value, final float y) {
 
-		final double width = graphSize - (2 * margin);
+		final double width = graphHeight - (2 * margin);
 
 		final double xWidth = width / ((value.length * 2) - 1);
 
@@ -319,7 +350,7 @@ public abstract class AbstractGraph extends JComponent {
 		}
 		final double smallHalfwidth = smallValueWidth * 0.5;
 
-		final double xAnker = graphSize * 0.5;
+		final double xAnker = graphHeight * 0.5;
 
 		double xOffset = 0.0;
 		for (int idx = 0; idx < value.length; idx++) {
@@ -360,9 +391,9 @@ public abstract class AbstractGraph extends JComponent {
 	}
 
 	private void drawBigText(final Graphics2D g2, final String value, final String unit, double factor) {
-		final double anker = graphSize * factor;
+		final double anker = graphHeight * factor;
 
-		g2.setFont(bigFont);
+		g2.setFont(bigBoldFont);
 		final FontMetrics bigFontMetrics = g2.getFontMetrics();
 
 		final double bigFontHeight = bigFontMetrics.getAscent() * 0.72;
@@ -371,12 +402,29 @@ public abstract class AbstractGraph extends JComponent {
 		final int valueWidth = bigFontMetrics.stringWidth(value);
 		final double halfwidth = valueWidth * 0.5;
 
-		g2.drawString(value, (int) (graphSize * 0.5 - halfwidth), (int) (anker + halfheight));
+		g2.drawString(value, (int) (graphHeight * 0.5 - halfwidth), (int) (anker + halfheight));
 
 		if (null != unit) {
 			g2.setFont(smallFont);
-			g2.drawString(unit, (int) ((graphSize * 0.5 + halfwidth) * 1.01), (int) (anker + halfheight));
+			g2.drawString(unit, (int) ((graphHeight * 0.5 + halfwidth) * 1.01), (int) (anker + halfheight));
 		}
+	}
+
+	public static class GraphConfig {
+
+		public static final GraphConfig FULL = new GraphConfig(100, false);
+
+		public static final GraphConfig HALF = new GraphConfig(50, true);
+
+		private final int height;
+
+		private final boolean expand;
+
+		public GraphConfig(final int heigth, final boolean expand) {
+			this.height = heigth;
+			this.expand = expand;
+		}
+
 	}
 
 }

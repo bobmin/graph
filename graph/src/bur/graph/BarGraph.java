@@ -35,10 +35,10 @@ public class BarGraph extends AbstractGraph {
 	@Override
 	public void createGraph(final Graphics2D g2) {
 
-		final double stroke = (graphSize - 2 * margin) / 11;
+		final double stroke = (graphHeight - 2 * margin) / 11;
 
 		final double top = margin;
-		final double bottom = (graphSize * 0.5d) - stroke * 0.5f;
+		final double bottom = (graphHeight * 0.5d) - stroke * 0.5f;
 
 		g2.setStroke(new BasicStroke((float) stroke, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
 
@@ -107,7 +107,7 @@ public class BarGraph extends AbstractGraph {
 		}
 
 		g2.setColor(GraphConstants.getTextColor());
-		final int tx1 = (int) (graphSize - margin - (fontMetrics.getHeight() * 1));
+		final int tx1 = (int) (graphHeight - margin - (fontMetrics.getHeight() * 1));
 		// g2.drawString(title, (int) ((graphSize -
 		// fontMetrics.stringWidth(title)) * 0.5d), tx1);
 		drawSmallTextBottom(g2, 1, false, string(0));

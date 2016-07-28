@@ -7,8 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -19,6 +22,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import bur.graph.BarGraph.Mode;
+import bur.graph.GraphConstants.FontStyle;
 
 /**
  * Startet eine Demo zu den verschiedenen grafischem Komponenten.
@@ -43,6 +47,9 @@ public class GraphDemo extends JFrame implements ActionListener {
 	/** die Heatmap-Grafiken */
 	private final HeatmapGraph[] heatmapGraph;
 
+	/** die Laufschrift */
+	private final MarqueeGraph marqueeGraph;
+
 	/** der Zeitgeber */
 	private Timer timer = null;
 
@@ -66,11 +73,18 @@ public class GraphDemo extends JFrame implements ActionListener {
 	}
 
 	public GraphDemo() {
+		final LogManager logManager = LogManager.getLogManager();
+		InputStream is = null;
+		try {
+			is = getClass().getResourceAsStream("/logging.properties");
+			logManager.readConfiguration(is);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 		setTitle("Demo: grafische Komponenten");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		final JPanel contentPane = new JPanel(new BorderLayout(0, 0));
 		contentPane.setBackground(GraphConstants.getBackgroundColor());
-		contentPane.add(new ColorPanel(), BorderLayout.SOUTH);
 		final int graphCount = 5;
 		pieGraph = new PieGraph[graphCount];
 		final JPanel centerPanel = new JPanel(new GridLayout(4, graphCount));
@@ -96,6 +110,25 @@ public class GraphDemo extends JFrame implements ActionListener {
 			centerPanel.add(heatmapGraph[idx]);
 		}
 		contentPane.add(centerPanel, BorderLayout.CENTER);
+
+		final JPanel southPanel = new JPanel(new BorderLayout(0, 0));
+		marqueeGraph = new MarqueeGraph();
+		marqueeGraph.setTexts(0, "Deutsch:" + '\u2007', "Hallo Welt!");
+		marqueeGraph.setTexts(1, "Englisch:" + '\u2007', "Hello World!");
+		marqueeGraph.setTexts(2, "Französisch:" + '\u2007', "Bonjour le monde!");
+		marqueeGraph.setStyles(0, FontStyle.BOLD, FontStyle.REGULAR, FontStyle.REGULAR);
+		marqueeGraph.setStyles(1, FontStyle.BOLD, FontStyle.REGULAR, FontStyle.REGULAR);
+		marqueeGraph.setStyles(2, FontStyle.BOLD, FontStyle.REGULAR, FontStyle.REGULAR);
+		marqueeGraph.setColors(0, GraphConstants.getTextColor(), GraphConstants.getBlueColor(),
+				GraphConstants.getTextColor());
+		marqueeGraph.setColors(1, GraphConstants.getTextColor(), GraphConstants.getBlueColor(),
+				GraphConstants.getTextColor());
+		marqueeGraph.setColors(2, GraphConstants.getTextColor(), GraphConstants.getBlueColor(),
+				GraphConstants.getTextColor());
+		southPanel.add(marqueeGraph, BorderLayout.CENTER);
+		southPanel.add(new ColorPanel(), BorderLayout.SOUTH);
+		contentPane.add(southPanel, BorderLayout.SOUTH);
+
 		getContentPane().add(contentPane);
 		setSize(650, 500);
 		setLocationRelativeTo(null);
@@ -112,6 +145,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 						textGraph[idx].setDebug(debug);
 						barGraph[idx].setDebug(debug);
 						heatmapGraph[idx].setDebug(debug);
+						marqueeGraph.setDebug(debug);
 					}
 					LOG.info("set [debug]: " + debug);
 				}
@@ -178,13 +212,15 @@ public class GraphDemo extends JFrame implements ActionListener {
 			tick = 1;
 		}
 		for (int idx = 0; idx < barGraph.length; idx++) {
-			barGraph[idx].highlighterTick();
-			heatmapGraph[idx].highlighterTick();
 			pieGraph[idx].repaint();
 			textGraph[idx].repaint();
+			barGraph[idx].highlighterTick();
 			barGraph[idx].repaint();
+			heatmapGraph[idx].highlighterTick();
 			heatmapGraph[idx].repaint();
 		}
+		marqueeGraph.highlighterTick();
+		marqueeGraph.repaint();
 	}
 
 	private static class ColorPanel extends JPanel {

@@ -41,18 +41,18 @@ public class PieGraph extends AbstractGraph {
 	@Override
 	public void createGraph(final Graphics2D g2) {
 
-		final float stokeSize = graphSize * 0.075f;
+		final float stokeSize = graphHeight * 0.075f;
 
 		final BasicStroke stroke = new BasicStroke(stokeSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
 		g2.setStroke(stroke);
 
 		g2.setColor(GraphConstants.getTextColor());
 
-		g2.draw(new Ellipse2D.Double(margin, margin, (graphSize - 2 * margin), (graphSize - 2 * margin)));
+		g2.draw(new Ellipse2D.Double(margin, margin, (graphHeight - 2 * margin), (graphHeight - 2 * margin)));
 
 		g2.setColor(GraphConstants.getBlueColor());
 
-		g2.draw(new Arc2D.Double(margin, margin, (graphSize - 2 * margin), (graphSize - 2 * margin), 90,
+		g2.draw(new Arc2D.Double(margin, margin, (graphHeight - 2 * margin), (graphHeight - 2 * margin), 90,
 				(360.0d * value / 100), Arc2D.OPEN));
 
 		final String vauleString = String.valueOf(value);

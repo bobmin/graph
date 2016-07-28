@@ -24,7 +24,7 @@ public class TextGraph extends AbstractGraph {
 
 		if (mode == Mode.TWO_BIG) {
 
-			g2.setFont(bigFont);
+			g2.setFont(bigBoldFont);
 			final FontMetrics fontMetrics = g2.getFontMetrics();
 
 			final String t1 = string(0);
@@ -32,13 +32,13 @@ public class TextGraph extends AbstractGraph {
 
 			final float height = lm.getAscent();
 
-			final float b = (graphSize * 0.45f);
+			final float b = (graphHeight * 0.45f);
 
 			float x, y;
 			int w;
 
 			w = fontMetrics.stringWidth(t1);
-			x = ((graphSize - w) * 0.5f);
+			x = ((graphHeight - w) * 0.5f);
 			y = b;
 
 			// g2.drawString(t1, x, y);
@@ -46,7 +46,7 @@ public class TextGraph extends AbstractGraph {
 
 			final String t2 = string(1);
 			w = fontMetrics.stringWidth(t2);
-			x = ((graphSize - w) * 0.5f);
+			x = ((graphHeight - w) * 0.5f);
 			y = b + height;
 
 			g2.drawString(t2, x, y);
@@ -54,7 +54,7 @@ public class TextGraph extends AbstractGraph {
 		} else if (mode == Mode.ONE_BIG_TWO_SMALL) {
 			// paintString(g2, graphSize, bigFont, string(0), null, null, 0);
 
-			g2.setFont(bigFont);
+			g2.setFont(bigBoldFont);
 
 			final String t = string(0);
 
@@ -62,8 +62,8 @@ public class TextGraph extends AbstractGraph {
 			final int stringWidth = fontMetrics.stringWidth(t);
 			final int height = fontMetrics.getHeight();
 
-			final float x = ((graphSize - stringWidth) * 0.5f);
-			final float y = (graphSize * 0.25f) + fontMetrics.getMaxAscent() * 0.5f;
+			final float x = ((graphHeight - stringWidth) * 0.5f);
+			final float y = (graphHeight * 0.25f) + fontMetrics.getMaxAscent() * 0.5f;
 
 			// g2.drawString(t, x, y);
 			drawBigTextTop(g2, t);

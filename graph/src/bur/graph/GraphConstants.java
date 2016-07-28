@@ -123,4 +123,8 @@ public class GraphConstants {
 		return Color.green;
 	}
 
+	public enum FontStyle {
+		BOLD, REGULAR
+	}
+
 }
