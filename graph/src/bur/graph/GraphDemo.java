@@ -1,6 +1,5 @@
 package bur.graph;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -83,35 +82,34 @@ public class GraphDemo extends JFrame implements ActionListener {
 		}
 		setTitle("Demo: grafische Komponenten");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		final JPanel contentPane = new JPanel(new BorderLayout(0, 0));
+
+		final GraphPanel contentPane = new GraphPanel();
 		contentPane.setBackground(GraphConstants.getBackgroundColor());
+
 		final int graphCount = 5;
 		pieGraph = new PieGraph[graphCount];
-		final JPanel centerPanel = new JPanel(new GridLayout(4, graphCount));
-		centerPanel.setOpaque(false);
+
 		for (int idx = 0; idx < graphCount; idx++) {
 			pieGraph[idx] = new PieGraph();
-			centerPanel.add(pieGraph[idx]);
+			contentPane.add(idx, 0, pieGraph[idx]);
 		}
 		textGraph = new TextGraph[graphCount];
 		for (int idx = 0; idx < graphCount; idx++) {
 			textGraph[idx] = new TextGraph();
-			centerPanel.add(textGraph[idx]);
+			contentPane.add(idx, 1, textGraph[idx]);
 		}
 		barGraph = new BarGraph[graphCount];
 		for (int idx = 0; idx < graphCount; idx++) {
 			barGraph[idx] = new BarGraph();
-			centerPanel.add(barGraph[idx]);
+			contentPane.add(idx, 2, barGraph[idx]);
 		}
 		heatmapGraph = new HeatmapGraph[graphCount];
 		for (int idx = 0; idx < graphCount; idx++) {
 			heatmapGraph[idx] = new HeatmapGraph(8, 4);
 			heatmapGraph[idx].setColorLimits(250.0, 650.0);
-			centerPanel.add(heatmapGraph[idx]);
+			contentPane.add(idx, 3, heatmapGraph[idx]);
 		}
-		contentPane.add(centerPanel, BorderLayout.CENTER);
 
-		final JPanel southPanel = new JPanel(new BorderLayout(0, 0));
 		marqueeGraph = new MarqueeGraph();
 		marqueeGraph.setTexts(0, "Deutsch:" + '\u2007', "Hallo Welt!");
 		marqueeGraph.setTexts(1, "Englisch:" + '\u2007', "Hello World!");
@@ -125,9 +123,8 @@ public class GraphDemo extends JFrame implements ActionListener {
 				GraphConstants.getTextColor());
 		marqueeGraph.setColors(2, GraphConstants.getTextColor(), GraphConstants.getBlueColor(),
 				GraphConstants.getTextColor());
-		southPanel.add(marqueeGraph, BorderLayout.CENTER);
-		southPanel.add(new ColorPanel(), BorderLayout.SOUTH);
-		contentPane.add(southPanel, BorderLayout.SOUTH);
+		contentPane.add(0, 4, marqueeGraph);
+		contentPane.add(0, 5, new ColorPanel());
 
 		getContentPane().add(contentPane);
 		setSize(650, 500);
@@ -237,6 +234,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 
 		private void initColorButton(final String label, final Color bg) {
 			final JLabel x = new JLabel(label, SwingConstants.CENTER);
+			x.setFont(GraphConstants.ROBOTO_REGULAR.deriveFont(12.0f));
 			x.setBackground(bg);
 			x.setOpaque(true);
 			add(x);
