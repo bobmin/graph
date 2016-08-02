@@ -22,6 +22,8 @@ import javax.swing.Timer;
 
 import bur.graph.BarGraph.Mode;
 import bur.graph.GraphConstants.FontStyle;
+import bur.graph.GraphPaneBuilder.GraphPane;
+import bur.graph.MarqueeGraph.Alignment;
 
 /**
  * Startet eine Demo zu den verschiedenen grafischem Komponenten.
@@ -77,13 +79,17 @@ public class GraphDemo extends JFrame implements ActionListener {
 		try {
 			is = getClass().getResourceAsStream("/logging.properties");
 			logManager.readConfiguration(is);
-		} catch (IOException ex) {
+		} catch (final IOException ex) {
 			ex.printStackTrace();
 		}
 		setTitle("Demo: grafische Komponenten");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		final GraphPanel contentPane = new GraphPanel();
+		final GraphPane contentPane = GraphPaneBuilder.create(5, 6)
+				.rowHeight(4, 50).rowHeight(5, 15)
+				.rowFill(4, true).rowFill(5, true)
+				.rowWeight(5, Double.MIN_VALUE)
+				.build();
 		contentPane.setBackground(GraphConstants.getBackgroundColor());
 
 		final int graphCount = 5;
@@ -110,7 +116,7 @@ public class GraphDemo extends JFrame implements ActionListener {
 			contentPane.add(idx, 3, heatmapGraph[idx]);
 		}
 
-		marqueeGraph = new MarqueeGraph();
+		marqueeGraph = new MarqueeGraph(Alignment.CENTER);
 		marqueeGraph.setTexts(0, "Deutsch:" + '\u2007', "Hallo Welt!");
 		marqueeGraph.setTexts(1, "Englisch:" + '\u2007', "Hello World!");
 		marqueeGraph.setTexts(2, "Französisch:" + '\u2007', "Bonjour le monde!");

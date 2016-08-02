@@ -31,11 +31,22 @@ public class MarqueeGraph extends AbstractGraph {
 	/** der Speicher für Textfarben */
 	private Map<Integer, Color[]> lineColors = null;
 
+	private Alignment alignment = MarqueeGraph.Alignment.LEFT;
+
 	/**
 	 * Instanziiert das Objekt mit halber Höhe.
 	 */
 	public MarqueeGraph() {
+		this(MarqueeGraph.Alignment.LEFT);
+	}
+
+	/**
+	 * Instanziiert das Objekt mit halber Höhe und legt die horizontale
+	 * Textausrichtung fest.
+	 */
+	public MarqueeGraph(final Alignment alignment) {
 		super(GraphConfig.HALF);
+		this.alignment = alignment;
 	}
 
 	@Override
@@ -47,7 +58,27 @@ public class MarqueeGraph extends AbstractGraph {
 
 		if (null != line(lineIndex, 0)) {
 			final int lineLength = getLineLength(lineIndex);
+
 			int ankerWidth = 0;
+
+			if (Alignment.CENTER == alignment) {
+				int ankerSum = 0;
+				for (int valueIndex = 0; valueIndex < lineLength; valueIndex++) {
+					final FontStyle style = style(lineIndex, valueIndex);
+					if (FontStyle.BOLD == style) {
+						g2.setFont(bigBoldFont);
+					} else {
+						g2.setFont(bigRegularFont);
+					}
+
+					final FontMetrics bigFontMetrics = g2.getFontMetrics();
+
+					final String value = line(highlighter - 1, valueIndex);
+					ankerSum += bigFontMetrics.stringWidth(value);
+				}
+				ankerWidth = (int) ((graphWidth * 0.5) - (ankerSum * 0.5) - margin);
+			}
+
 			for (int valueIndex = 0; valueIndex < lineLength; valueIndex++) {
 				final FontStyle style = style(lineIndex, valueIndex);
 				if (FontStyle.BOLD == style) {
@@ -67,7 +98,7 @@ public class MarqueeGraph extends AbstractGraph {
 				final double bigFontHeight = bigFontMetrics.getAscent() * 0.72;
 				final double halfheight = bigFontHeight * 0.5;
 
-				String value = line(highlighter - 1, valueIndex);
+				final String value = line(highlighter - 1, valueIndex);
 
 				g2.drawString(value, (int) (margin * 2) + ankerWidth, (int) (ankerHeight + halfheight));
 				ankerWidth += bigFontMetrics.stringWidth(value);
@@ -137,7 +168,7 @@ public class MarqueeGraph extends AbstractGraph {
 	private FontStyle style(final int lineIndex, final int valueIndex) {
 		FontStyle x = null;
 		final Integer key = Integer.valueOf(lineIndex);
-		if (lineStyles.containsKey(key)) {
+		if (null != lineStyles && lineStyles.containsKey(key)) {
 			final FontStyle[] styles = lineStyles.get(key);
 			if (valueIndex < styles.length) {
 				x = styles[valueIndex];
@@ -149,7 +180,7 @@ public class MarqueeGraph extends AbstractGraph {
 	private Color color(final int lineIndex, final int valueIndex) {
 		Color x = null;
 		final Integer key = Integer.valueOf(lineIndex);
-		if (lineColors.containsKey(key)) {
+		if (null != lineColors && lineColors.containsKey(key)) {
 			final Color[] colors = lineColors.get(key);
 			if (valueIndex < colors.length) {
 				x = colors[valueIndex];
@@ -178,6 +209,13 @@ public class MarqueeGraph extends AbstractGraph {
 		} else {
 			lineColors.put(Integer.valueOf(lineIndex), Arrays.copyOf(values, values.length));
 		}
+	}
+
+	/**
+	 * Die horizontale Ausrichtung vom Text.
+	 */
+	public enum Alignment {
+		LEFT, CENTER
 	}
 
 }
