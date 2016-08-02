@@ -33,6 +33,8 @@ public class MarqueeGraph extends AbstractGraph {
 
 	private Alignment alignment = MarqueeGraph.Alignment.LEFT;
 
+	private final int highlighterFactor = 4;
+
 	/**
 	 * Instanziiert das Objekt mit halber Höhe.
 	 */
@@ -54,7 +56,7 @@ public class MarqueeGraph extends AbstractGraph {
 
 		final double ankerHeight = graphHeight * 0.5;
 
-		final int lineIndex = highlighter - 1;
+		final int lineIndex = (int) Math.ceil(((double) highlighter) / highlighterFactor) - 1;
 
 		if (null != line(lineIndex, 0)) {
 			final int lineLength = getLineLength(lineIndex);
@@ -70,10 +72,8 @@ public class MarqueeGraph extends AbstractGraph {
 					} else {
 						g2.setFont(bigRegularFont);
 					}
-
 					final FontMetrics bigFontMetrics = g2.getFontMetrics();
-
-					final String value = line(highlighter - 1, valueIndex);
+					final String value = line(lineIndex, valueIndex);
 					ankerSum += bigFontMetrics.stringWidth(value);
 				}
 				ankerWidth = (int) ((graphWidth * 0.5) - (ankerSum * 0.5) - margin);
@@ -92,14 +92,10 @@ public class MarqueeGraph extends AbstractGraph {
 				} else {
 					g2.setColor(GraphConstants.getTextColor());
 				}
-
 				final FontMetrics bigFontMetrics = g2.getFontMetrics();
-
 				final double bigFontHeight = bigFontMetrics.getAscent() * 0.72;
 				final double halfheight = bigFontHeight * 0.5;
-
-				final String value = line(highlighter - 1, valueIndex);
-
+				final String value = line(lineIndex, valueIndex);
 				g2.drawString(value, (int) (margin * 2) + ankerWidth, (int) (ankerHeight + halfheight));
 				ankerWidth += bigFontMetrics.stringWidth(value);
 			}
@@ -126,7 +122,8 @@ public class MarqueeGraph extends AbstractGraph {
 
 	@Override
 	public int getLength() {
-		return (null == moreLines ? 1 : (moreLines.size() + 1));
+		final int l = (null == moreLines ? 1 : ((moreLines.size() + 1) * 3));
+		return l;
 	}
 
 	/**
