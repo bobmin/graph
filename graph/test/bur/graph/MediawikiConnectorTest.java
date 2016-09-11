@@ -16,20 +16,16 @@ import org.junit.Test;
 public class MediawikiConnectorTest {
 
 	/** der Server zum Testen */
-	private static final String SERVER = System.getProperty(
-			MediawikiConnectorTest.class.getSimpleName() + ".server");
+	private static final String SERVER = System.getProperty(MediawikiConnectorTest.class.getSimpleName() + ".server");
 
 	/** die Seite zum Testen */
-	private static final String PAGE = System.getProperty(
-			MediawikiConnectorTest.class.getSimpleName() + ".page");
+	private static final String PAGE = System.getProperty(MediawikiConnectorTest.class.getSimpleName() + ".page");
 
 	/** die Seite zum Testen */
-	private static final String USER = System.getProperty(
-			MediawikiConnectorTest.class.getSimpleName() + ".user");
+	private static final String USER = System.getProperty(MediawikiConnectorTest.class.getSimpleName() + ".user");
 
 	/** die Seite zum Testen */
-	private static final String PASS = System.getProperty(
-			MediawikiConnectorTest.class.getSimpleName() + ".pass");
+	private static final String PASS = System.getProperty(MediawikiConnectorTest.class.getSimpleName() + ".pass");
 
 	@BeforeClass
 	public static void beforeClass() {
