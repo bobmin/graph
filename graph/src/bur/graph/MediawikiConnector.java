@@ -44,6 +44,18 @@ public class MediawikiConnector {
 
 	private String token = null;
 
+	/** der Zeitpunkt für die nächste Anmeldung */
+	private long nextLoginTime = -1;
+
+	/**
+	 * Das Hauptprogramm liest die Konsolenparamter und führt den Aufruf aus.
+	 * <ul>
+	 * <li>--set="1:neuer Wert"</li>
+	 * </ul>
+	 * 
+	 * @param args
+	 *            die Konsolenparameter
+	 */
 	public static void main(String[] args) {
 		String server = null, page = null, user = null, pass = null, cmd = null;
 		for (final String x : args) {
@@ -72,7 +84,7 @@ public class MediawikiConnector {
 		final MediawikiConnector conn = new MediawikiConnector(server, page);
 		conn.get();
 		if (null != cmd) {
-			final String postdata = conn.createNewText(cmd);
+			final String postdata = conn.createText(cmd);
 			conn.post(user, pass, postdata);
 		}
 	}
@@ -136,6 +148,7 @@ public class MediawikiConnector {
 		// http://www.hccp.org/java-net-cookie-how-to.html
 		// https://www.mediawiki.org/wiki/API:Login/de
 		// https://github.com/Alfresco/alfresco-php-sdk/blob/master/mediawiki-integration/source/java/org/alfresco/module/mediawikiintegration/action/MediaWikiActionExecuter.java
+
 		final Map<String, String> loginData = new HashMap<>();
 		loginData.put("action", "login");
 		loginData.put("format", "json");
@@ -154,6 +167,14 @@ public class MediawikiConnector {
 
 	}
 
+	/**
+	 * Führt einen POST-Request zum Server aus.
+	 * 
+	 * @param address
+	 *            die Adresse
+	 * @param data
+	 *            die Daten
+	 */
 	public void doPost(final String address, final Map<String, String> data) {
 		HttpURLConnection connection = null;
 		InputStream is = null;
@@ -232,24 +253,35 @@ public class MediawikiConnector {
 		}
 	}
 
-	private String createNewText(final String replace) {
-		final StringBuffer sb = new StringBuffer();
-		final int match = replace.indexOf(':');
+	/**
+	 * Durchläuft die gespeicherten Werte und ersetzt die gewünschte Zeile. Die
+	 * Änderung wird durch den Index und den neuen Wert (getrennt durch
+	 * Doppelpunkt) angegeben. Wird kein neuer Wert gesetzt oder ist
+	 * {@code newValue} gleich <code>null</code>, dann wird der gespeicherte
+	 * Text geliefert.
+	 * 
+	 * @param newValue
+	 *            die Änderung aus Index und Wert duch Doppelpunkt getrennt
+	 * @return eine Zeichenkette, niemals <code>null</code>
+	 */
+	private String createText(final String newValue) {
+		final StringBuffer x = new StringBuffer();
+		final int match = (null == newValue ? -1 : newValue.indexOf(':'));
 		int index = 0;
 		final Iterator<String> it = values.iterator();
 		while (it.hasNext()) {
 			final String line = it.next();
 			if (0 < index) {
-				sb.append("\n");
+				x.append("\n");
 			}
 			if (match == index) {
-				sb.append("* ").append(replace.substring(match + 1));
+				x.append("* ").append(newValue.substring(match + 1));
 			} else {
-				sb.append(line);
+				x.append(line);
 			}
 			index++;
 		}
-		return sb.toString();
+		return x.toString();
 	}
 
 	private void close(HttpURLConnection connection, InputStream is, BufferedReader rd) {
