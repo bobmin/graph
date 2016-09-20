@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,6 +32,10 @@ import java.util.regex.Pattern;
  */
 public class MediawikiConnector {
 
+	/** die Programmkennung */
+	private static final String USERAGENT = MediawikiConnector.class.getSimpleName()
+			+ ".java/0.01 (https://github.com/.../)";
+
 	/** der Logger */
 	private static final Logger LOG = Logger.getLogger(MediawikiConnector.class.getName());
 
@@ -40,12 +45,13 @@ public class MediawikiConnector {
 	/** der Seite wird abgefragt/bearbeitet */
 	private final String page;
 
-	private final Set<String> values = new LinkedHashSet<>();
+	/** das Cookie zur Anmeldung */
+	private Map<String, String> cookies = new HashMap<>();
 
+	/** der Token zur Anmeldung */
 	private String token = null;
 
-	/** der Zeitpunkt für die nächste Anmeldung */
-	private long nextLoginTime = -1;
+	private final Set<String> values = new LinkedHashSet<>();
 
 	/**
 	 * Das Hauptprogramm liest die Konsolenparamter und führt den Aufruf aus.
@@ -149,26 +155,62 @@ public class MediawikiConnector {
 		// https://www.mediawiki.org/wiki/API:Login/de
 		// https://github.com/Alfresco/alfresco-php-sdk/blob/master/mediawiki-integration/source/java/org/alfresco/module/mediawikiintegration/action/MediaWikiActionExecuter.java
 
+		// TODO den Login-Token holen
+
 		final Map<String, String> loginData = new HashMap<>();
-		loginData.put("action", "login");
-		loginData.put("format", "json");
 		loginData.put("lgname", user);
 		loginData.put("lgpassword", pass);
 
-		doPost("http://" + server + "/wiki/api.php", loginData);
+		doPost("http://" + server + "/wiki/api.php?format=json&action=login", loginData);
+
+		loginData.put("lgtoken", token);
+
+		doPost("http://" + server + "/wiki/api.php?format=json&action=login", loginData);
 
 		final Map<String, String> editData = new HashMap<>();
-		editData.put("action", "edit");
-		editData.put("format", "json");
 		editData.put("title", page);
 		editData.put("text", "HALLOWELT");
 
-		doPost("http://" + server + "/wiki/api.php", editData);
+		doPost("http://" + server + "/wiki/api.php?format=json&action=edit", editData);
 
 	}
 
+	private String doGet(final String address) {
+		final StringBuffer sb = new StringBuffer();
+
+		HttpURLConnection connection = null;
+		InputStream is = null;
+		BufferedReader rd = null;
+
+		try {
+			final URL url = new URL(address);
+			connection = (HttpURLConnection) url.openConnection();
+
+			is = connection.getInputStream();
+			rd = new BufferedReader(new InputStreamReader(is));
+
+			String line;
+			while ((line = rd.readLine()) != null) {
+				if (0 < sb.length()) {
+					sb.append("\n");
+				}
+				sb.append(line);
+			}
+			rd.close();
+			LOG.info("response recived: " + sb.toString());
+
+		} catch (final IOException ex) {
+			LOG.log(Level.SEVERE, "", ex);
+
+		} finally {
+			close(connection, is, rd);
+
+		}
+		return sb.toString();
+	}
+
 	/**
-	 * Führt einen POST-Request zum Server aus.
+	 * Führt einen POST-Request mit den Daten zum Server aus.
 	 * 
 	 * @param address
 	 *            die Adresse
@@ -183,17 +225,18 @@ public class MediawikiConnector {
 			final URL url = new URL(address);
 			connection = (HttpURLConnection) url.openConnection();
 
+			setCookies(connection);
+
 			final StringBuffer dataEncode = new StringBuffer();
 
 			for (Entry<String, String> e : data.entrySet()) {
+				if (0 < dataEncode.length()) {
+					dataEncode.append("&");
+				}
 				dataEncode.append(URLEncoder.encode(e.getKey(), "UTF-8"));
 				dataEncode.append("=");
 				dataEncode.append(URLEncoder.encode(e.getValue(), "UTF-8"));
-				dataEncode.append("&");
 			}
-			dataEncode.append(URLEncoder.encode("token", "UTF-8"));
-			dataEncode.append("=");
-			dataEncode.append(URLEncoder.encode(((null == token ? "" : token) + "+\""), "UTF-8"));
 
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
@@ -212,17 +255,11 @@ public class MediawikiConnector {
 				wr.close();
 			}
 
-			// String headerName = null;
-			// for (int i = 1; (headerName = connection.getHeaderFieldKey(i)) !=
-			// null; i++) {
-			// if (headerName.equals("Set-Cookie")) {
-			// String cookie = connection.getHeaderField(i);
-			// System.out.println("cookie: " + cookie);
-			// }
-			// }
-
 			is = connection.getInputStream();
 			rd = new BufferedReader(new InputStreamReader(is));
+
+			grabCookies(connection);
+
 			String line;
 			final StringBuffer sb = new StringBuffer();
 			while ((line = rd.readLine()) != null) {
@@ -232,17 +269,18 @@ public class MediawikiConnector {
 				sb.append(line);
 			}
 			rd.close();
+
 			final String response = sb.toString();
-			// {"login":{"result":"NeedToken","token":"903165633db63a2a507878384d92be9d","cookieprefix":"wiki","sessionid":"05a015be811c5d50ccdf63151228d343"}}
 			LOG.info("response recived: " + response);
 
+			// {"login":{"result":"NeedToken","token":"903165633db63a2a507878384d92be9d","cookieprefix":"wiki","sessionid":"05a015be811c5d50ccdf63151228d343"}}
+
 			final Pattern p = Pattern.compile("\"token\":\"([^\"]+)\"");
-			final Matcher m = p.matcher(sb.toString());
+			final Matcher m = p.matcher(response);
 			if (m.find()) {
 				token = m.group(1);
+				LOG.info("token assigned: " + token);
 			}
-
-			LOG.info("token assigned: " + token);
 
 		} catch (final IOException ex) {
 			LOG.log(Level.SEVERE, "", ex);
@@ -251,6 +289,53 @@ public class MediawikiConnector {
 			close(connection, is, rd);
 
 		}
+	}
+
+	/**
+	 * Grabs cookies from the URL connection provided.
+	 * 
+	 * @param u
+	 *            an unconnected URLConnection
+	 */
+	private void grabCookies(URLConnection u) {
+		String headerName;
+		for (int i = 1; (headerName = u.getHeaderFieldKey(i)) != null; i++)
+			if (headerName.equals("Set-Cookie")) {
+				String cookie = u.getHeaderField(i);
+				cookie = cookie.substring(0, cookie.indexOf(';'));
+				String name = cookie.substring(0, cookie.indexOf('='));
+				String value = cookie.substring(cookie.indexOf('=') + 1, cookie.length());
+				// these cookies were pruned, but are still sent for some
+				// reason?
+				// TODO: when these cookies are no longer sent, remove this test
+				if (!value.equals("deleted")) {
+					cookies.put(name, value);
+					LOG.info("cookie assigned: " + name + " = " + value);
+				}
+			}
+	}
+
+	/**
+	 * Sets cookies to an unconnected URLConnection and enables gzip compression
+	 * of returned text.
+	 * 
+	 * @param u
+	 *            an unconnected URLConnection
+	 */
+	protected void setCookies(URLConnection u) {
+		StringBuilder cookie = new StringBuilder(100);
+		for (Map.Entry<String, String> entry : cookies.entrySet()) {
+			cookie.append(entry.getKey());
+			cookie.append("=");
+			cookie.append(entry.getValue());
+			cookie.append("; ");
+		}
+		u.setRequestProperty("Cookie", cookie.toString());
+		// enable gzip compression
+		// if (zipped) {
+		// u.setRequestProperty("Accept-encoding", "gzip");
+		// }
+		u.setRequestProperty("User-Agent", USERAGENT);
 	}
 
 	/**
@@ -284,6 +369,17 @@ public class MediawikiConnector {
 		return x.toString();
 	}
 
+	/**
+	 * Schließt die Objekte ohne Ausnahmefehler. Wird eine Exception ausgelöst,
+	 * wird eine Warnung protokolliert.
+	 * 
+	 * @param connection
+	 *            die Verbindung
+	 * @param is
+	 *            die Eingabe
+	 * @param rd
+	 *            die Ausgabe
+	 */
 	private void close(HttpURLConnection connection, InputStream is, BufferedReader rd) {
 		if (null != rd) {
 			try {
