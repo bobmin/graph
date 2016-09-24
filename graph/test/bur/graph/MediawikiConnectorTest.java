@@ -52,7 +52,7 @@ public class MediawikiConnectorTest {
 	}
 
 	@Test
-	@Ignore
+	@Ignore("benötigt eine Verbindung zum Server")
 	public void testPost() {
 		final int postIndex = 1;
 		final Set<String> values = printPageValues();
@@ -61,16 +61,17 @@ public class MediawikiConnectorTest {
 		System.out.println("backup[" + postIndex + "]: " + backup);
 		// POST ausführen
 		final MediawikiConnector conn = new MediawikiConnector(SERVER, PAGE);
-		conn.post(USER, PASS, "1:* JUnit DEMO");
+		final String newContent = conn.createText(postIndex + ":* JUnit DEMO");
+		conn.publish(USER, PASS, newContent);
 		final Set<String> postValues = printPageValues();
 		final String checkValue = postValues.toArray(new String[values.size()])[postIndex];
 		Assert.assertEquals("POST nicht erfolgreich?", "* JUnit DEMO", checkValue);
-		conn.post(USER, PASS, "1:" + backup);
+		final String oldContent = conn.createText(postIndex + ":" + backup);
+		conn.publish(USER, PASS, oldContent);
 	}
 
 	private Set<String> printPageValues() {
 		final MediawikiConnector conn = new MediawikiConnector(SERVER, PAGE);
-		conn.get();
 		final Set<String> values = conn.getValue();
 		System.out.println("values: " + values);
 		return values;
