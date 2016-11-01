@@ -29,11 +29,27 @@ public class GraphManager {
 		}
 	}
 
+	public void keyPressed(int keyCode) {
+		for (GraphState x : states) {
+			x.keyPressed(keyCode);
+		}
+	}
+
+	public void keyReleased(int keyCode) {
+		for (GraphState x : states) {
+			x.keyReleased(keyCode);
+		}
+	}
+
 	public interface GraphState {
 
 		void update();
 
 		void draw(Graphics2D g);
+
+		void keyPressed(int keyCode);
+
+		void keyReleased(int keyCode);
 
 	}
 
