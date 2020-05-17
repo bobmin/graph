@@ -8,3 +8,5 @@ Our experiment with with Java2D. A pie chart, bar chart and text chart are forme
  
  * http://dashing.io/
  * http://www.cyfe.com/
+ 
+![diagramme](https://github.com/bobmin/graph/blob/master/diagramme.jpg)
